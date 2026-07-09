@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "tsdown",
+    "check-types": "tsc -p tsconfig.json --noEmit",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",

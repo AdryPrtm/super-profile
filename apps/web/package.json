@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --port=3001",
     "build": "next build",
+    "check-types": "tsc -p tsconfig.json --noEmit",
     "start": "next start"
   },
   "dependencies": {
@@ -29,7 +30,8 @@
     "@prisma/client": "catalog:",
     "better-auth": "catalog:",
     "@super-profile-dry/api": "workspace:*",
-    "@super-profile-dry/auth": "workspace:*"
+    "@super-profile-dry/auth": "workspace:*",
+    "@super-profile-dry/db": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.10",

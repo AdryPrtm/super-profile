@@ -1,0 +1,8 @@
+model ProfileContent {
+  id        String   @id @default("main") @map("_id")
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profile_content")
+}
