@@ -4,13 +4,14 @@ import type { Prisma } from "@super-profile-dry/db";
 export type Skill = {
   name: string;
   category: string;
+  logo: string;
 };
 
 export type Project = {
   title: string;
   description: string;
-  tags: string[];
-  link: string;
+  tech: string[];
+  images: string[];
 };
 
 export type Experience = {
@@ -75,36 +76,68 @@ export const DEFAULT_PROFILE_CONTENT: ProfileContent = {
     ],
   },
   skills: [
-    { name: "React", category: "Frontend" },
-    { name: "Next.js", category: "Frontend" },
-    { name: "TypeScript", category: "Language" },
-    { name: "Node.js", category: "Backend" },
-    { name: "PostgreSQL", category: "Database" },
-    { name: "Tailwind CSS", category: "Styling" },
-    { name: "Prisma", category: "ORM" },
-    { name: "Docker", category: "DevOps" },
+    {
+      name: "React",
+      category: "Frontend",
+      logo: "https://cdn.simpleicons.org/react",
+    },
+    {
+      name: "Next.js",
+      category: "Frontend",
+      logo: "https://cdn.simpleicons.org/nextdotjs",
+    },
+    {
+      name: "TypeScript",
+      category: "Language",
+      logo: "https://cdn.simpleicons.org/typescript",
+    },
+    {
+      name: "Node.js",
+      category: "Backend",
+      logo: "https://cdn.simpleicons.org/nodedotjs",
+    },
+    {
+      name: "PostgreSQL",
+      category: "Database",
+      logo: "https://cdn.simpleicons.org/postgresql",
+    },
+    {
+      name: "Tailwind CSS",
+      category: "Styling",
+      logo: "https://cdn.simpleicons.org/tailwindcss",
+    },
+    {
+      name: "Prisma",
+      category: "ORM",
+      logo: "https://cdn.simpleicons.org/prisma",
+    },
+    {
+      name: "Docker",
+      category: "DevOps",
+      logo: "https://cdn.simpleicons.org/docker",
+    },
   ],
   projects: [
     {
       title: "Project Alpha",
       description:
         "A modern web application built with Next.js and TypeScript. Features real-time collaboration and responsive design.",
-      tags: ["Next.js", "TypeScript", "PostgreSQL"],
-      link: "#",
+      tech: ["Next.js", "TypeScript", "PostgreSQL"],
+      images: [],
     },
     {
       title: "Project Beta",
       description:
         "REST API service with authentication, rate limiting, and comprehensive documentation.",
-      tags: ["Node.js", "Express", "Redis"],
-      link: "#",
+      tech: ["Node.js", "Prisma", "PostgreSQL"],
+      images: [],
     },
     {
       title: "Project Gamma",
       description:
         "Mobile-first dashboard with data visualization, analytics tracking, and export capabilities.",
-      tags: ["React", "D3.js", "Tailwind"],
-      link: "#",
+      tech: ["React", "Tailwind CSS", "Docker"],
+      images: [],
     },
   ],
   experiences: [
@@ -186,9 +219,21 @@ function readSkills(value: unknown, fallback: Skill[]) {
       {
         name,
         category: readString(item.category, "").trim(),
+        logo: readString(item.logo, "").trim(),
       },
     ];
   });
+}
+
+function readStringArray(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 function readProjects(value: unknown, fallback: Project[]) {
@@ -206,16 +251,13 @@ function readProjects(value: unknown, fallback: Project[]) {
       return [];
     }
 
-    const tags = Array.isArray(item.tags)
-      ? item.tags.filter((tag): tag is string => typeof tag === "string")
-      : [];
-
     return [
       {
         title,
         description: readString(item.description, "").trim(),
-        tags,
-        link: readString(item.link, "#").trim() || "#",
+        // Konten lama menyimpan tech stack di field "tags".
+        tech: readStringArray(item.tech ?? item.tags),
+        images: readStringArray(item.images),
       },
     ];
   });

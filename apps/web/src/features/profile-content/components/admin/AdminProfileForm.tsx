@@ -5,12 +5,9 @@ import { saveAdminProfileContent } from "@/features/profile-content/actions/save
 import { AdminFormSection } from "@/features/profile-content/components/admin/AdminFormSection";
 import { ProfileField } from "@/features/profile-content/components/admin/ProfileField";
 import { ProfileTextareaField } from "@/features/profile-content/components/admin/ProfileTextareaField";
+import { SkillsAndProjectsEditor } from "@/features/profile-content/components/admin/SkillsAndProjectsEditor";
 import type { ProfileContent } from "@/features/profile-content/data/profile-content";
-import {
-  experiencesToText,
-  projectsToText,
-  skillsToText,
-} from "@/features/profile-content/utils/profile-content-codec";
+import { experiencesToText } from "@/features/profile-content/utils/profile-content-codec";
 
 type AdminProfileFormProps = {
   content: ProfileContent;
@@ -79,25 +76,10 @@ export function AdminProfileForm({ content }: AdminProfileFormProps) {
         />
       </AdminFormSection>
 
-      <AdminFormSection title="Skills">
-        <ProfileTextareaField
-          label="Skills"
-          name="skills"
-          defaultValue={skillsToText(content.skills)}
-          placeholder="React | Frontend"
-          rows={8}
-        />
-      </AdminFormSection>
-
-      <AdminFormSection title="Projects">
-        <ProfileTextareaField
-          label="Projects"
-          name="projects"
-          defaultValue={projectsToText(content.projects)}
-          placeholder="Project Name | Short description | Next.js, Prisma | https://example.com"
-          rows={8}
-        />
-      </AdminFormSection>
+      <SkillsAndProjectsEditor
+        skills={content.skills}
+        projects={content.projects}
+      />
 
       <AdminFormSection title="Experience">
         <ProfileTextareaField
