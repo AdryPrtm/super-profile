@@ -3,11 +3,11 @@ import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { saveAdminProfileContent } from "@/features/profile-content/actions/save-profile-content-action";
 import { AdminFormSection } from "@/features/profile-content/components/admin/AdminFormSection";
+import { ExperiencesEditor } from "@/features/profile-content/components/admin/ExperiencesEditor";
 import { ProfileField } from "@/features/profile-content/components/admin/ProfileField";
 import { ProfileTextareaField } from "@/features/profile-content/components/admin/ProfileTextareaField";
 import { SkillsAndProjectsEditor } from "@/features/profile-content/components/admin/SkillsAndProjectsEditor";
 import type { ProfileContent } from "@/features/profile-content/data/profile-content";
-import { experiencesToText } from "@/features/profile-content/utils/profile-content-codec";
 
 type AdminProfileFormProps = {
   content: ProfileContent;
@@ -81,15 +81,7 @@ export function AdminProfileForm({ content }: AdminProfileFormProps) {
         projects={content.projects}
       />
 
-      <AdminFormSection title="Experience">
-        <ProfileTextareaField
-          label="Experiences"
-          name="experiences"
-          defaultValue={experiencesToText(content.experiences)}
-          placeholder="2024 - Present | Role | Company | What you did"
-          rows={8}
-        />
-      </AdminFormSection>
+      <ExperiencesEditor experiences={content.experiences} />
 
       <AdminFormSection title="Contact">
         <div className="grid gap-4 sm:grid-cols-2">

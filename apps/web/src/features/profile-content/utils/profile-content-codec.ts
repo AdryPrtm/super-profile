@@ -80,17 +80,27 @@ function parseProjects(formData: FormData): Project[] {
   });
 }
 
-function parseExperiences(value: string): Experience[] {
-  return splitLines(value).flatMap((line) => {
-    const [period = "", role = "", company = "", description = ""] = line
-      .split("|")
-      .map((part) => part.trim());
+function parseExperiences(formData: FormData): Experience[] {
+  const periods = formData.getAll("experiencePeriod");
+  const roles = formData.getAll("experienceRole");
+  const companies = formData.getAll("experienceCompany");
+  const descriptions = formData.getAll("experienceDescription");
+
+  return roles.flatMap((rawRole, index) => {
+    const role = readEntry(rawRole);
 
     if (!role) {
       return [];
     }
 
-    return [{ period, role, company, description }];
+    return [
+      {
+        period: readEntry(periods[index]),
+        role,
+        company: readEntry(companies[index]),
+        description: readEntry(descriptions[index]),
+      },
+    ];
   });
 }
 
@@ -123,7 +133,7 @@ export function buildProfileContentFromFormData(formData: FormData) {
     },
     skills: parseSkills(formData),
     projects: parseProjects(formData),
-    experiences: parseExperiences(getText(formData, "experiences", "")),
+    experiences: parseExperiences(formData),
     contact: {
       eyebrow: getText(formData, "contactEyebrow", fallback.contact.eyebrow),
       title: getText(formData, "contactTitle", fallback.contact.title),
@@ -157,13 +167,4 @@ export function buildProfileContentFromFormData(formData: FormData) {
       ),
     },
   } satisfies ProfileContent;
-}
-
-export function experiencesToText(experiences: Experience[]) {
-  return experiences
-    .map(
-      (experience) =>
-        `${experience.period} | ${experience.role} | ${experience.company} | ${experience.description}`,
-    )
-    .join("\n");
 }

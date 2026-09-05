@@ -28,7 +28,8 @@
     "db:push": "bun run --filter @super-profile-dry/db db:push",
     "db:studio": "bun run --filter @super-profile-dry/db db:studio",
     "db:generate": "bun run --filter @super-profile-dry/db db:generate",
-    "db:migrate": "bun run --filter @super-profile-dry/db db:migrate"
+    "db:migrate": "bun run --filter @super-profile-dry/db db:migrate",
+    "db:secure": "bun run --filter @super-profile-dry/db db:secure"
   },
   "dependencies": {
     "dotenv": "^17.2.2",
