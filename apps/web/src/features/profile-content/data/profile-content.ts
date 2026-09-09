@@ -14,9 +14,24 @@ export type Project = {
   images: string[];
 };
 
+export type SocialLink = {
+  label: string;
+  url: string;
+  /** Value ikon bawaan (lihat SOCIAL_ICON_PRESETS) atau URL gambar custom. */
+  icon: string;
+};
+
 export type Experience = {
   role: string;
   company: string;
+  /** Remote / On-site / Hybrid. */
+  locationType: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+  isCurrent: boolean;
+  /** Format lama "2024 - Present"; dipakai kalau tanggal terstruktur kosong. */
   period: string;
   description: string;
 };
@@ -45,12 +60,7 @@ export type ProfileContent = {
     email: string;
     buttonLabel: string;
   };
-  socialLinks: {
-    github: string;
-    linkedin: string;
-    twitter: string;
-    email: string;
-  };
+  socials: SocialLink[];
   footer: {
     copyrightName: string;
   };
@@ -144,21 +154,39 @@ export const DEFAULT_PROFILE_CONTENT: ProfileContent = {
     {
       role: "Senior Software Engineer",
       company: "Company Name",
-      period: "2024 - Present",
+      locationType: "Remote",
+      startMonth: "1",
+      startYear: "2024",
+      endMonth: "",
+      endYear: "",
+      isCurrent: true,
+      period: "",
       description:
         "Leading frontend architecture and implementing design systems for scalable applications.",
     },
     {
       role: "Software Engineer",
       company: "Previous Company",
-      period: "2022 - 2024",
+      locationType: "On-site",
+      startMonth: "3",
+      startYear: "2022",
+      endMonth: "12",
+      endYear: "2023",
+      isCurrent: false,
+      period: "",
       description:
         "Built and maintained full-stack features, focusing on performance optimization and code quality.",
     },
     {
       role: "Junior Developer",
       company: "First Company",
-      period: "2020 - 2022",
+      locationType: "Hybrid",
+      startMonth: "7",
+      startYear: "2020",
+      endMonth: "2",
+      endYear: "2022",
+      isCurrent: false,
+      period: "",
       description:
         "Developed responsive web interfaces and contributed to open-source projects.",
     },
@@ -171,12 +199,12 @@ export const DEFAULT_PROFILE_CONTENT: ProfileContent = {
     email: "hello@example.com",
     buttonLabel: "Say Hello",
   },
-  socialLinks: {
-    github: "#",
-    linkedin: "#",
-    twitter: "#",
-    email: "mailto:hello@example.com",
-  },
+  socials: [
+    { label: "GitHub", url: "#", icon: "github" },
+    { label: "LinkedIn", url: "#", icon: "linkedin" },
+    { label: "Instagram", url: "#", icon: "instagram" },
+    { label: "Email", url: "mailto:hello@example.com", icon: "email" },
+  ],
   footer: {
     copyrightName: "Your Name",
   },
@@ -263,6 +291,32 @@ function readProjects(value: unknown, fallback: Project[]) {
   });
 }
 
+function readBoolean(value: unknown) {
+  return value === true;
+}
+
+/**
+ * Data lama hanya menyimpan period berupa teks ("2024 - Present"). Kalau
+ * polanya masih terbaca, isi ulang jadi tanggal terstruktur supaya form admin
+ * tidak tampil kosong.
+ */
+function migrateLegacyPeriod(period: string) {
+  const match = /^(\d{4})\s*-\s*(present|\d{4})$/i.exec(period);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, startYear = "", rawEnd = ""] = match;
+  const isCurrent = rawEnd.toLowerCase() === "present";
+
+  return {
+    startYear,
+    endYear: isCurrent ? "" : rawEnd,
+    isCurrent,
+  };
+}
+
 function readExperiences(value: unknown, fallback: Experience[]) {
   if (!Array.isArray(value)) {
     return fallback;
@@ -278,12 +332,85 @@ function readExperiences(value: unknown, fallback: Experience[]) {
       return [];
     }
 
+    const period = readString(item.period, "").trim();
+    const startYear = readString(item.startYear, "").trim();
+    const legacy = startYear ? null : migrateLegacyPeriod(period);
+
     return [
       {
         role,
         company: readString(item.company, "").trim(),
-        period: readString(item.period, "").trim(),
+        locationType: readString(item.locationType, "").trim(),
+        startMonth: readString(item.startMonth, "").trim(),
+        startYear: legacy ? legacy.startYear : startYear,
+        endMonth: readString(item.endMonth, "").trim(),
+        endYear: legacy ? legacy.endYear : readString(item.endYear, "").trim(),
+        isCurrent: legacy ? legacy.isCurrent : readBoolean(item.isCurrent),
+        period,
         description: readString(item.description, "").trim(),
+      },
+    ];
+  });
+}
+
+/**
+ * Data lama menyimpan social link sebagai object dengan key tetap. Dipetakan
+ * ke bentuk list supaya admin bisa menambah atau menghapus platform sendiri.
+ */
+const LEGACY_SOCIAL_PRESETS: Record<string, { label: string; icon: string }> = {
+  github: { label: "GitHub", icon: "github" },
+  linkedin: { label: "LinkedIn", icon: "linkedin" },
+  twitter: { label: "X (Twitter)", icon: "x" },
+  instagram: { label: "Instagram", icon: "instagram" },
+  email: { label: "Email", icon: "email" },
+};
+
+function readLegacySocialLinks(value: unknown) {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const socials = Object.entries(value).flatMap(([key, rawUrl]) => {
+    const url = readString(rawUrl, "").trim();
+
+    if (!url) {
+      return [];
+    }
+
+    const preset = LEGACY_SOCIAL_PRESETS[key];
+
+    return [
+      {
+        label: preset?.label ?? key,
+        url,
+        icon: preset?.icon ?? key,
+      },
+    ];
+  });
+
+  return socials.length > 0 ? socials : null;
+}
+
+function readSocials(value: unknown, legacy: unknown, fallback: SocialLink[]) {
+  if (!Array.isArray(value)) {
+    return readLegacySocialLinks(legacy) ?? fallback;
+  }
+
+  return value.flatMap((item) => {
+    if (!isRecord(item)) {
+      return [];
+    }
+
+    const url = readString(item.url, "").trim();
+    if (!url) {
+      return [];
+    }
+
+    return [
+      {
+        label: readString(item.label, "").trim(),
+        url,
+        icon: readString(item.icon, "").trim(),
       },
     ];
   });
@@ -294,7 +421,6 @@ export function normalizeProfileContent(value: unknown): ProfileContent {
   const hero = isRecord(source.hero) ? source.hero : {};
   const about = isRecord(source.about) ? source.about : {};
   const contact = isRecord(source.contact) ? source.contact : {};
-  const socialLinks = isRecord(source.socialLinks) ? source.socialLinks : {};
   const footer = isRecord(source.footer) ? source.footer : {};
 
   return {
@@ -351,24 +477,11 @@ export function normalizeProfileContent(value: unknown): ProfileContent {
         DEFAULT_PROFILE_CONTENT.contact.buttonLabel,
       ),
     },
-    socialLinks: {
-      github: readString(
-        socialLinks.github,
-        DEFAULT_PROFILE_CONTENT.socialLinks.github,
-      ),
-      linkedin: readString(
-        socialLinks.linkedin,
-        DEFAULT_PROFILE_CONTENT.socialLinks.linkedin,
-      ),
-      twitter: readString(
-        socialLinks.twitter,
-        DEFAULT_PROFILE_CONTENT.socialLinks.twitter,
-      ),
-      email: readString(
-        socialLinks.email,
-        DEFAULT_PROFILE_CONTENT.socialLinks.email,
-      ),
-    },
+    socials: readSocials(
+      source.socials,
+      source.socialLinks,
+      DEFAULT_PROFILE_CONTENT.socials,
+    ),
     footer: {
       copyrightName: readString(
         footer.copyrightName,

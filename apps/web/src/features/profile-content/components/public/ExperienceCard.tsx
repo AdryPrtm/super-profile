@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 import type { Experience } from "@/features/profile-content/data/profile-content";
+import { formatExperiencePeriod } from "@/features/profile-content/utils/experience-period";
+import { richTextClass } from "@/features/profile-content/utils/rich-text";
 import { cn } from "@/lib/utils";
 
 type ExperienceCardProps = {
@@ -17,33 +18,10 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
 
   const contentOnRight = index % 2 === 0;
   const expandable = Boolean(experience.description);
-
-  const heading = (
-    <span
-      className={cn(
-        "flex flex-wrap items-baseline gap-x-2 gap-y-1",
-        contentOnRight ? "md:justify-start" : "md:justify-end",
-      )}
-    >
-      <span className="text-base font-medium text-foreground">
-        {experience.role}
-      </span>
-      {experience.company ? (
-        <span className="text-sm text-muted-foreground">
-          {experience.company}
-        </span>
-      ) : null}
-      {expandable ? (
-        <ChevronDown
-          aria-hidden
-          className={cn(
-            "h-4 w-4 shrink-0 self-center text-muted-foreground transition-transform duration-300",
-            open && "rotate-180",
-          )}
-        />
-      ) : null}
-    </span>
-  );
+  const period = formatExperiencePeriod(experience);
+  const subtitle = [experience.company, experience.locationType]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <li className="relative pl-12 md:grid md:grid-cols-2 md:items-start md:gap-x-12 md:pl-0">
@@ -60,9 +38,11 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
             : "md:col-start-2 md:justify-start",
         )}
       >
-        <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-primary-foreground shadow-sm">
-          {experience.period}
-        </span>
+        {period ? (
+          <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium tracking-wide text-primary-foreground shadow-sm">
+            {period}
+          </span>
+        ) : null}
       </div>
 
       <div
@@ -73,28 +53,35 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
             : "md:col-start-1 md:text-right",
         )}
       >
-        {expandable ? (
-          <button
-            type="button"
-            aria-expanded={open}
-            onClick={() => setOpen((current) => !current)}
-            className={cn(
-              "block w-full text-left transition-opacity hover:opacity-80",
-              contentOnRight ? "md:text-left" : "md:text-right",
-            )}
-          >
-            {heading}
-          </button>
-        ) : (
-          heading
-        )}
+        <h3 className="text-base font-medium text-foreground">
+          {experience.role}
+        </h3>
+        {subtitle ? (
+          <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
+        ) : null}
 
-        {expandable && open ? (
-          <div className="animate-in fade-in-0 slide-in-from-top-1 mt-3 rounded-xl border border-border/50 bg-card/60 p-5 shadow-sm duration-300">
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {experience.description}
-            </p>
-          </div>
+        {expandable ? (
+          <>
+            <button
+              type="button"
+              aria-expanded={open}
+              onClick={() => setOpen((current) => !current)}
+              className="mt-2 rounded-full border border-border/60 px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+            >
+              {open ? "Show less" : "Show more"}
+            </button>
+
+            {open ? (
+              <div
+                className={cn(
+                  "animate-in fade-in-0 slide-in-from-top-1 mt-3 rounded-xl border border-border/50 bg-card/60 p-5 text-left text-sm leading-relaxed text-muted-foreground shadow-sm duration-300",
+                  richTextClass,
+                )}
+                // Konten ditulis sendiri lewat form admin, bukan input publik.
+                dangerouslySetInnerHTML={{ __html: experience.description }}
+              />
+            ) : null}
+          </>
         ) : null}
       </div>
     </li>

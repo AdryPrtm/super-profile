@@ -36,6 +36,30 @@ function nextKey(prefix: string) {
   return `${prefix}-added-${addedRowCount}`;
 }
 
+/** Menggeser satu baris satu posisi; urutan baris = urutan tampil di halaman publik. */
+function moveRow<Row extends { key: string }>(
+  rows: Row[],
+  key: string,
+  direction: -1 | 1,
+) {
+  const index = rows.findIndex((row) => row.key === key);
+  const target = index + direction;
+
+  if (index === -1 || target < 0 || target >= rows.length) {
+    return rows;
+  }
+
+  const next = [...rows];
+  const [moved] = next.splice(index, 1);
+
+  if (!moved) {
+    return rows;
+  }
+
+  next.splice(target, 0, moved);
+  return next;
+}
+
 export function SkillsAndProjectsEditor({
   skills,
   projects,
@@ -64,6 +88,9 @@ export function SkillsAndProjectsEditor({
           }
           onRemove={(key) =>
             setSkillRows((current) => current.filter((row) => row.key !== key))
+          }
+          onMove={(key, direction) =>
+            setSkillRows((current) => moveRow(current, key, direction))
           }
           onUpdate={(key, changes) =>
             setSkillRows((current) =>

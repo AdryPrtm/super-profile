@@ -20,10 +20,7 @@ export function PublicCvPage({ content }: PublicCvPageProps) {
       <ProjectsSection projects={content.projects} />
       <ExperienceSection experiences={content.experiences} />
       <ContactSection contact={content.contact} />
-      <ProfileFooter
-        footer={content.footer}
-        socialLinks={content.socialLinks}
-      />
+      <ProfileFooter footer={content.footer} socials={content.socials} />
     </main>
   );
 }

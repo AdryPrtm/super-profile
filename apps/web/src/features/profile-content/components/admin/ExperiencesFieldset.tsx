@@ -3,85 +3,75 @@
 import { Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { textareaClass } from "@/features/profile-content/components/admin/ProfileTextareaField";
+import { RichTextEditor } from "@/features/profile-content/components/admin/RichTextEditor";
 import type { Experience } from "@/features/profile-content/data/profile-content";
+import {
+  formatExperiencePeriod,
+  LOCATION_TYPE_OPTIONS,
+  MONTH_OPTIONS,
+} from "@/features/profile-content/utils/experience-period";
 import { cn } from "@/lib/utils";
 
 export type ExperienceRow = Experience & { key: string };
 
-const PRESENT_LABEL = "Present";
-
 // Rentang tahun dihitung sekali di module supaya server dan client merender
 // daftar option yang sama.
 const CURRENT_YEAR = new Date().getFullYear();
-const YEAR_OPTIONS = Array.from({ length: 51 }, (_, index) =>
-  String(CURRENT_YEAR + 1 - index),
-);
+
+const YEAR_SELECT_OPTIONS = Array.from({ length: 51 }, (_, index) => {
+  const year = String(CURRENT_YEAR - index);
+  return { value: year, label: year };
+});
+
+const LOCATION_SELECT_OPTIONS = LOCATION_TYPE_OPTIONS.map((type) => ({
+  value: type,
+  label: type,
+}));
 
 const selectClass =
-  "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px]";
+  "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50";
 
-/** "2024 - Present" -> { start: "2024", end: "Present" } */
-function splitPeriod(period: string) {
-  const [start = "", end = ""] = period.split("-").map((part) => part.trim());
-  return { start, end };
-}
-
-function joinPeriod(start: string, end: string) {
-  if (!start) {
-    return end;
-  }
-
-  return end ? `${start} - ${end}` : start;
-}
-
-type YearSelectProps = {
+type SelectFieldProps = {
   id: string;
-  label: string;
   value: string;
-  includePresent?: boolean;
+  disabled?: boolean;
+  placeholder: string;
+  options: { value: string; label: string }[];
   onChange: (value: string) => void;
 };
 
-function YearSelect({
+function SelectField({
   id,
-  label,
   value,
-  includePresent,
+  disabled,
+  placeholder,
+  options,
   onChange,
-}: YearSelectProps) {
-  // Tahun hasil input lama bisa di luar rentang option; tetap tampilkan supaya
-  // nilainya tidak diam-diam berubah saat card dibuka.
+}: SelectFieldProps) {
+  // Nilai dari data lama bisa di luar daftar option; tetap ditampilkan supaya
+  // tidak diam-diam berubah saat card dibuka.
   const extraOption =
-    value && value !== PRESENT_LABEL && !YEAR_OPTIONS.includes(value)
-      ? value
-      : null;
+    value && !options.some((option) => option.value === value) ? value : null;
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <select
-        id={id}
-        className={cn(selectClass, !value && "text-muted-foreground")}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        <option value="">—</option>
-        {includePresent ? (
-          <option value={PRESENT_LABEL}>{PRESENT_LABEL}</option>
-        ) : null}
-        {extraOption ? (
-          <option value={extraOption}>{extraOption}</option>
-        ) : null}
-        {YEAR_OPTIONS.map((year) => (
-          <option key={year} value={year}>
-            {year}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      id={id}
+      className={cn(selectClass, !value && "text-muted-foreground")}
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+    >
+      <option value="">{placeholder}</option>
+      {extraOption ? <option value={extraOption}>{extraOption}</option> : null}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 }
 
@@ -107,7 +97,7 @@ export function ExperiencesFieldset({
       ) : null}
 
       {rows.map((row) => {
-        const { start, end } = splitPeriod(row.period);
+        const preview = formatExperiencePeriod(row);
 
         return (
           <div
@@ -129,33 +119,48 @@ export function ExperiencesFieldset({
               </Button>
             </div>
 
+            {/* Select di bawah hanya UI; nilainya dikirim lewat hidden input
+                supaya select yang disabled tetap ikut tersimpan. */}
+            <input
+              type="hidden"
+              name="experienceLocationType"
+              value={row.locationType}
+            />
+            <input
+              type="hidden"
+              name="experienceStartMonth"
+              value={row.startMonth}
+            />
+            <input
+              type="hidden"
+              name="experienceStartYear"
+              value={row.startYear}
+            />
+            <input
+              type="hidden"
+              name="experienceEndMonth"
+              value={row.isCurrent ? "" : row.endMonth}
+            />
+            <input
+              type="hidden"
+              name="experienceEndYear"
+              value={row.isCurrent ? "" : row.endYear}
+            />
+            <input
+              type="hidden"
+              name="experienceIsCurrent"
+              value={row.isCurrent ? "1" : "0"}
+            />
             <input type="hidden" name="experiencePeriod" value={row.period} />
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <YearSelect
-                id={`${row.key}-period-start`}
-                label="Tahun Mulai"
-                value={start}
-                onChange={(value) =>
-                  onUpdate(row.key, { period: joinPeriod(value, end) })
-                }
-              />
-              <YearSelect
-                id={`${row.key}-period-end`}
-                label="Tahun Selesai"
-                value={end}
-                includePresent
-                onChange={(value) =>
-                  onUpdate(row.key, { period: joinPeriod(start, value) })
-                }
-              />
               <div className="space-y-2">
                 <Label htmlFor={`${row.key}-role`}>Posisi</Label>
                 <Input
                   id={`${row.key}-role`}
                   name="experienceRole"
                   value={row.role}
-                  placeholder="Senior Software Engineer"
+                  placeholder="Cloud Computing Student"
                   onChange={(event) =>
                     onUpdate(row.key, { role: event.target.value })
                   }
@@ -167,7 +172,7 @@ export function ExperiencesFieldset({
                   id={`${row.key}-company`}
                   name="experienceCompany"
                   value={row.company}
-                  placeholder="Company Name"
+                  placeholder="Bangkit Academy"
                   onChange={(event) =>
                     onUpdate(row.key, { company: event.target.value })
                   }
@@ -175,17 +180,99 @@ export function ExperiencesFieldset({
               </div>
             </div>
 
+            <div className="space-y-2 sm:max-w-xs">
+              <Label htmlFor={`${row.key}-location-type`}>Tipe Kerja</Label>
+              <SelectField
+                id={`${row.key}-location-type`}
+                value={row.locationType}
+                placeholder="Pilih tipe"
+                options={LOCATION_SELECT_OPTIONS}
+                onChange={(value) => onUpdate(row.key, { locationType: value })}
+              />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor={`${row.key}-start-month`}>Mulai</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <SelectField
+                    id={`${row.key}-start-month`}
+                    value={row.startMonth}
+                    placeholder="Bulan"
+                    options={MONTH_OPTIONS}
+                    onChange={(value) =>
+                      onUpdate(row.key, { startMonth: value })
+                    }
+                  />
+                  <SelectField
+                    id={`${row.key}-start-year`}
+                    value={row.startYear}
+                    placeholder="Tahun"
+                    options={YEAR_SELECT_OPTIONS}
+                    onChange={(value) => onUpdate(row.key, { startYear: value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${row.key}-end-month`}>Selesai</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <SelectField
+                    id={`${row.key}-end-month`}
+                    value={row.isCurrent ? "" : row.endMonth}
+                    disabled={row.isCurrent}
+                    placeholder="Bulan"
+                    options={MONTH_OPTIONS}
+                    onChange={(value) => onUpdate(row.key, { endMonth: value })}
+                  />
+                  <SelectField
+                    id={`${row.key}-end-year`}
+                    value={row.isCurrent ? "" : row.endYear}
+                    disabled={row.isCurrent}
+                    placeholder="Tahun"
+                    options={YEAR_SELECT_OPTIONS}
+                    onChange={(value) => onUpdate(row.key, { endYear: value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`${row.key}-is-current`}
+                checked={row.isCurrent}
+                onCheckedChange={(checked) =>
+                  onUpdate(row.key, { isCurrent: checked === true })
+                }
+              />
+              <Label
+                htmlFor={`${row.key}-is-current`}
+                className="text-sm font-normal"
+              >
+                Masih bekerja di sini
+              </Label>
+            </div>
+
+            {preview ? (
+              <p className="text-xs text-muted-foreground">
+                Tampil sebagai:{" "}
+                <span className="text-foreground">{preview}</span>
+              </p>
+            ) : null}
+
             <div className="space-y-2">
               <Label htmlFor={`${row.key}-description`}>Deskripsi</Label>
-              <textarea
-                id={`${row.key}-description`}
+              <input
+                type="hidden"
                 name="experienceDescription"
-                rows={3}
-                className={textareaClass}
                 value={row.description}
-                placeholder="Muncul saat card di-click di halaman publik."
-                onChange={(event) =>
-                  onUpdate(row.key, { description: event.target.value })
+              />
+              <RichTextEditor
+                id={`${row.key}-description`}
+                value={row.description}
+                placeholder="Muncul saat tombol Show more di-click di halaman publik."
+                onChange={(value) =>
+                  onUpdate(row.key, { description: value })
                 }
               />
             </div>

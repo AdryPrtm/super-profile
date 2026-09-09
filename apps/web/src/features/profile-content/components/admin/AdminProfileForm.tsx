@@ -7,6 +7,7 @@ import { ExperiencesEditor } from "@/features/profile-content/components/admin/E
 import { ProfileField } from "@/features/profile-content/components/admin/ProfileField";
 import { ProfileTextareaField } from "@/features/profile-content/components/admin/ProfileTextareaField";
 import { SkillsAndProjectsEditor } from "@/features/profile-content/components/admin/SkillsAndProjectsEditor";
+import { SocialsEditor } from "@/features/profile-content/components/admin/SocialsEditor";
 import type { ProfileContent } from "@/features/profile-content/data/profile-content";
 
 type AdminProfileFormProps = {
@@ -117,30 +118,7 @@ export function AdminProfileForm({ content }: AdminProfileFormProps) {
         </div>
       </AdminFormSection>
 
-      <AdminFormSection title="Social Links">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ProfileField
-            label="GitHub"
-            name="socialGithub"
-            defaultValue={content.socialLinks.github}
-          />
-          <ProfileField
-            label="LinkedIn"
-            name="socialLinkedin"
-            defaultValue={content.socialLinks.linkedin}
-          />
-          <ProfileField
-            label="Twitter"
-            name="socialTwitter"
-            defaultValue={content.socialLinks.twitter}
-          />
-          <ProfileField
-            label="Email Link"
-            name="socialEmail"
-            defaultValue={content.socialLinks.email}
-          />
-        </div>
-      </AdminFormSection>
+      <SocialsEditor socials={content.socials} />
 
       <AdminFormSection title="Footer">
         <ProfileField

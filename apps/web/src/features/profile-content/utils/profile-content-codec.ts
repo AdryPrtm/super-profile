@@ -4,6 +4,7 @@ import {
   type ProfileContent,
   type Project,
   type Skill,
+  type SocialLink,
 } from "@/features/profile-content/data/profile-content";
 import { getText, splitLines } from "@/features/profile-content/utils/form-data";
 
@@ -81,9 +82,15 @@ function parseProjects(formData: FormData): Project[] {
 }
 
 function parseExperiences(formData: FormData): Experience[] {
-  const periods = formData.getAll("experiencePeriod");
   const roles = formData.getAll("experienceRole");
   const companies = formData.getAll("experienceCompany");
+  const locationTypes = formData.getAll("experienceLocationType");
+  const startMonths = formData.getAll("experienceStartMonth");
+  const startYears = formData.getAll("experienceStartYear");
+  const endMonths = formData.getAll("experienceEndMonth");
+  const endYears = formData.getAll("experienceEndYear");
+  const currentFlags = formData.getAll("experienceIsCurrent");
+  const periods = formData.getAll("experiencePeriod");
   const descriptions = formData.getAll("experienceDescription");
 
   return roles.flatMap((rawRole, index) => {
@@ -93,12 +100,42 @@ function parseExperiences(formData: FormData): Experience[] {
       return [];
     }
 
+    const isCurrent = readEntry(currentFlags[index]) === "1";
+
     return [
       {
-        period: readEntry(periods[index]),
         role,
         company: readEntry(companies[index]),
+        locationType: readEntry(locationTypes[index]),
+        startMonth: readEntry(startMonths[index]),
+        startYear: readEntry(startYears[index]),
+        endMonth: isCurrent ? "" : readEntry(endMonths[index]),
+        endYear: isCurrent ? "" : readEntry(endYears[index]),
+        isCurrent,
+        period: readEntry(periods[index]),
         description: readEntry(descriptions[index]),
+      },
+    ];
+  });
+}
+
+function parseSocials(formData: FormData): SocialLink[] {
+  const labels = formData.getAll("socialLabel");
+  const urls = formData.getAll("socialUrl");
+  const icons = formData.getAll("socialIcon");
+
+  return urls.flatMap((rawUrl, index) => {
+    const url = readEntry(rawUrl);
+
+    if (!url) {
+      return [];
+    }
+
+    return [
+      {
+        label: readEntry(labels[index]),
+        url,
+        icon: readEntry(icons[index]),
       },
     ];
   });
@@ -149,16 +186,7 @@ export function buildProfileContentFromFormData(formData: FormData) {
         fallback.contact.buttonLabel,
       ),
     },
-    socialLinks: {
-      github: getText(formData, "socialGithub", fallback.socialLinks.github),
-      linkedin: getText(
-        formData,
-        "socialLinkedin",
-        fallback.socialLinks.linkedin,
-      ),
-      twitter: getText(formData, "socialTwitter", fallback.socialLinks.twitter),
-      email: getText(formData, "socialEmail", fallback.socialLinks.email),
-    },
+    socials: parseSocials(formData),
     footer: {
       copyrightName: getText(
         formData,

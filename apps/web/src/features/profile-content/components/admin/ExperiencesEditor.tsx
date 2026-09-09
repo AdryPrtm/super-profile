@@ -39,9 +39,15 @@ export function ExperiencesEditor({ experiences }: ExperiencesEditorProps) {
             ...current,
             {
               key: nextKey(),
-              period: "",
               role: "",
               company: "",
+              locationType: "",
+              startMonth: "",
+              startYear: "",
+              endMonth: "",
+              endYear: "",
+              isCurrent: false,
+              period: "",
               description: "",
             },
           ])
