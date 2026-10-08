@@ -24,12 +24,14 @@ export function AdminProfilePage({
               Profile Content
             </h1>
           </div>
-          <a
-            href="/"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            View public CV
-          </a>
+          <div className="flex flex-wrap items-center gap-4">
+            <a href="/admin/watch" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Kelola tontonan
+            </a>
+            <a href="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              View public CV
+            </a>
+          </div>
         </div>
 
         {saved ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 
 import {
   Dialog,
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 type ProjectCardProps = {
   project: Project;
+  index: number;
 };
 
 function TechChips({ tech }: { tech: string[] }) {
@@ -23,7 +25,7 @@ function TechChips({ tech }: { tech: string[] }) {
       {tech.map((item) => (
         <span
           key={item}
-          className="rounded-full bg-accent/80 px-2.5 py-0.5 text-xs text-muted-foreground"
+          className="border border-[var(--portfolio-border)] px-2.5 py-1 text-[0.7rem] font-medium text-[var(--portfolio-muted)]"
         >
           {item}
         </span>
@@ -32,7 +34,7 @@ function TechChips({ tech }: { tech: string[] }) {
   );
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, index }: ProjectCardProps) {
   const [activeImage, setActiveImage] = useState(0);
 
   const cover = project.images[0];
@@ -54,32 +56,36 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="group block w-full rounded-2xl border border-border/50 p-6 text-left transition-all duration-300 hover:border-border hover:bg-accent/30"
+          className="group flex h-full w-full cursor-pointer flex-col border border-[var(--portfolio-border)] bg-[var(--portfolio-background)] text-left transition-colors hover:border-[var(--portfolio-accent)] hover:bg-[var(--portfolio-surface)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--portfolio-accent)]"
         >
-          <div className="flex items-start gap-4">
+          <div className="relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden border-b border-[var(--portfolio-border)] bg-[var(--portfolio-surface)]">
             {cover ? (
               <img
                 src={cover}
-                alt=""
+                alt={`${project.title} preview`}
                 loading="lazy"
-                className="h-20 w-28 shrink-0 rounded-lg border border-border/50 object-cover"
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
               />
-            ) : null}
-
-            <div className="min-w-0 flex-1 space-y-3">
-              <h3 className="text-lg font-medium group-hover:text-foreground">
-                {project.title}
-              </h3>
-              <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                {project.description}
-              </p>
-              <TechChips tech={project.tech} />
+            ) : (
+              <div className="flex h-full w-full flex-col justify-between p-6 sm:p-8">
+                <span className="portfolio-label text-[var(--portfolio-accent)]">Selected work / {String(index + 1).padStart(2, "0")}</span>
+                <span aria-hidden="true" className="line-clamp-2 max-w-full break-words text-4xl font-bold leading-none tracking-[-0.07em] text-[var(--portfolio-accent)] opacity-80 sm:text-5xl">{project.title}</span>
+                <span className="h-px w-full bg-[var(--portfolio-border)]" />
+              </div>
+            )}
+          </div>
+          <div className="flex w-full flex-1 flex-col p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <h3 className="text-xl font-bold tracking-tight sm:text-2xl">{project.title}</h3>
+              <ArrowUpRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[var(--portfolio-accent)]" />
             </div>
+            <p className="mt-3 mb-6 line-clamp-3 text-sm leading-relaxed text-[var(--portfolio-muted)]">{project.description}</p>
+            <div className="mt-auto"><TechChips tech={project.tech} /></div>
           </div>
         </button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="portfolio rounded-none border-[var(--portfolio-border)]">
         <DialogHeader>
           <DialogTitle>{project.title}</DialogTitle>
           {project.description ? (
@@ -91,7 +97,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="space-y-3">
             <img
               src={mainImage}
-              alt=""
+              alt={`${project.title} screenshot ${safeIndex + 1}`}
               className="max-h-[55vh] w-full rounded-xl border border-border/50 object-contain"
             />
 
@@ -113,7 +119,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                   >
                     <img
                       src={image}
-                      alt=""
+                      alt={`${project.title} screenshot ${index + 1}`}
                       loading="lazy"
                       className="h-full w-full object-cover"
                     />

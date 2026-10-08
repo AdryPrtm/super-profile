@@ -18,7 +18,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['user', 'session', 'account', 'verification', 'profile_content']
+  foreach t in array array['user', 'session', 'account', 'verification', 'profile_content', 'watch_entries']
   loop
     execute format('alter table public.%I enable row level security', t);
     execute format('revoke all on table public.%I from anon, authenticated', t);

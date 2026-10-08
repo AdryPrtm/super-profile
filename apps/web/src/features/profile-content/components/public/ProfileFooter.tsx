@@ -10,24 +10,24 @@ export function ProfileFooter({ footer, socials }: ProfileFooterProps) {
   const socialItems = socials.filter((social) => social.url.trim());
 
   return (
-    <footer className="border-t border-border/50 px-6 py-12">
-      <div className="mx-auto flex max-w-2xl flex-col items-center gap-6">
-        <div className="flex items-center gap-6">
+    <footer className="px-5 py-10 sm:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-bold tracking-tight">SUPER<span className="text-[var(--portfolio-accent)]">/</span>PROFILE</p>
+          <p className="mt-2 text-xs text-[var(--portfolio-muted)]">© {new Date().getFullYear()} {footer.copyrightName}. All rights reserved.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           {socialItems.map((social, index) => (
             <a
               key={`${social.url}-${index}`}
               href={social.url}
-              className="text-muted-foreground transition-colors hover:text-foreground"
+              className="flex h-11 w-11 items-center justify-center border border-[var(--portfolio-border)] text-[var(--portfolio-muted)] transition-colors hover:border-[var(--portfolio-accent)] hover:text-[var(--portfolio-accent)]"
               aria-label={social.label || "Social link"}
             >
               <SocialIcon icon={social.icon} label={social.label} />
             </a>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground/60">
-          Copyright {new Date().getFullYear()} {footer.copyrightName}. All
-          rights reserved.
-        </p>
       </div>
     </footer>
   );

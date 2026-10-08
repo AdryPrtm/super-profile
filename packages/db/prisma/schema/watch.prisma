@@ -1,0 +1,20 @@
+model WatchEntry {
+  id        String    @id @default(cuid())
+  title     String
+  category  String
+  status    String
+  source    String    @default("manual")
+  externalId String?   @unique
+  year      Int?
+  posterUrl String?
+  rating    Int?
+  notes     String?
+  watchedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([category, status])
+  @@index([watchedAt])
+  @@index([source])
+  @@map("watch_entries")
+}
