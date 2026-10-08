@@ -36,23 +36,23 @@ export async function uploadProjectImage(
   formData: FormData,
 ): Promise<UploadProjectImageResult> {
   if (!(await hasAdminAccess())) {
-    return { error: "Tidak punya akses admin." };
+    return { error: "Admin access is required." };
   }
 
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "File tidak terbaca." };
+    return { error: "The file could not be read." };
   }
 
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     return {
-      error: `Format ${file.type || "tidak dikenal"} tidak didukung.`,
+      error: `The ${file.type || "unknown"} format is not supported.`,
     };
   }
 
   if (file.size > MAX_IMAGE_BYTES) {
-    return { error: "Ukuran gambar melebihi 5 MB." };
+    return { error: "The image exceeds the 5 MB limit." };
   }
 
   const storage = getStorageClient();
@@ -60,7 +60,7 @@ export async function uploadProjectImage(
   if (!storage) {
     return {
       error:
-        "Upload belum aktif: SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY belum diisi di apps/web/.env",
+        "Uploads are not configured: set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in apps/web/.env",
     };
   }
 
@@ -73,7 +73,7 @@ export async function uploadProjectImage(
   if (error) {
     console.error("Failed to upload project image", error);
     return {
-      error: `Gagal mengunggah ke bucket "${PROJECT_IMAGE_BUCKET}": ${error.message}`,
+      error: `Could not upload to bucket "${PROJECT_IMAGE_BUCKET}": ${error.message}`,
     };
   }
 

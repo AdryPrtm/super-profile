@@ -26,7 +26,7 @@ export function AdminProfilePage({
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <a href="/admin/watch" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              Kelola tontonan
+              Manage watch journal
             </a>
             <a href="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               View public CV

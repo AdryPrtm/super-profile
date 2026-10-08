@@ -107,7 +107,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                   <button
                     key={image}
                     type="button"
-                    aria-label={`Lihat gambar ${index + 1}`}
+                    aria-label={`View image ${index + 1}`}
                     aria-current={index === safeIndex}
                     onClick={() => setActiveImage(index)}
                     className={cn(

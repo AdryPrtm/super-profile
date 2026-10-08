@@ -92,7 +92,7 @@ export function ExperiencesFieldset({
     <div className="space-y-3">
       {rows.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border/60 px-4 py-6 text-center text-sm text-muted-foreground">
-          Belum ada experience. Tambahkan lewat tombol di bawah.
+          No experience entries yet. Use the button below to add one.
         </p>
       ) : null}
 
@@ -106,13 +106,13 @@ export function ExperiencesFieldset({
           >
             <div className="flex items-center gap-3">
               <p className="flex-1 truncate text-sm font-medium">
-                {row.role.trim() || "Experience baru"}
+                {row.role.trim() || "New experience"}
               </p>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={`Hapus ${row.role.trim() || "experience baru"}`}
+                aria-label={`Remove ${row.role.trim() || "new experience"}`}
                 onClick={() => onRemove(row.key)}
               >
                 <Trash2 className="h-4 w-4" />
@@ -155,7 +155,7 @@ export function ExperiencesFieldset({
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor={`${row.key}-role`}>Posisi</Label>
+                <Label htmlFor={`${row.key}-role`}>Role</Label>
                 <Input
                   id={`${row.key}-role`}
                   name="experienceRole"
@@ -181,11 +181,11 @@ export function ExperiencesFieldset({
             </div>
 
             <div className="space-y-2 sm:max-w-xs">
-              <Label htmlFor={`${row.key}-location-type`}>Tipe Kerja</Label>
+              <Label htmlFor={`${row.key}-location-type`}>Work arrangement</Label>
               <SelectField
                 id={`${row.key}-location-type`}
                 value={row.locationType}
-                placeholder="Pilih tipe"
+                placeholder="Select a type"
                 options={LOCATION_SELECT_OPTIONS}
                 onChange={(value) => onUpdate(row.key, { locationType: value })}
               />
@@ -193,12 +193,12 @@ export function ExperiencesFieldset({
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor={`${row.key}-start-month`}>Mulai</Label>
+                <Label htmlFor={`${row.key}-start-month`}>Start</Label>
                 <div className="grid grid-cols-2 gap-2">
                   <SelectField
                     id={`${row.key}-start-month`}
                     value={row.startMonth}
-                    placeholder="Bulan"
+                    placeholder="Month"
                     options={MONTH_OPTIONS}
                     onChange={(value) =>
                       onUpdate(row.key, { startMonth: value })
@@ -207,7 +207,7 @@ export function ExperiencesFieldset({
                   <SelectField
                     id={`${row.key}-start-year`}
                     value={row.startYear}
-                    placeholder="Tahun"
+                    placeholder="Year"
                     options={YEAR_SELECT_OPTIONS}
                     onChange={(value) => onUpdate(row.key, { startYear: value })}
                   />
@@ -215,13 +215,13 @@ export function ExperiencesFieldset({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${row.key}-end-month`}>Selesai</Label>
+                <Label htmlFor={`${row.key}-end-month`}>End</Label>
                 <div className="grid grid-cols-2 gap-2">
                   <SelectField
                     id={`${row.key}-end-month`}
                     value={row.isCurrent ? "" : row.endMonth}
                     disabled={row.isCurrent}
-                    placeholder="Bulan"
+                    placeholder="Month"
                     options={MONTH_OPTIONS}
                     onChange={(value) => onUpdate(row.key, { endMonth: value })}
                   />
@@ -229,7 +229,7 @@ export function ExperiencesFieldset({
                     id={`${row.key}-end-year`}
                     value={row.isCurrent ? "" : row.endYear}
                     disabled={row.isCurrent}
-                    placeholder="Tahun"
+                    placeholder="Year"
                     options={YEAR_SELECT_OPTIONS}
                     onChange={(value) => onUpdate(row.key, { endYear: value })}
                   />
@@ -249,19 +249,19 @@ export function ExperiencesFieldset({
                 htmlFor={`${row.key}-is-current`}
                 className="text-sm font-normal"
               >
-                Masih bekerja di sini
+                I currently work here
               </Label>
             </div>
 
             {preview ? (
               <p className="text-xs text-muted-foreground">
-                Tampil sebagai:{" "}
+                Displayed as:{" "}
                 <span className="text-foreground">{preview}</span>
               </p>
             ) : null}
 
             <div className="space-y-2">
-              <Label htmlFor={`${row.key}-description`}>Deskripsi</Label>
+              <Label htmlFor={`${row.key}-description`}>Description</Label>
               <input
                 type="hidden"
                 name="experienceDescription"
@@ -270,7 +270,7 @@ export function ExperiencesFieldset({
               <RichTextEditor
                 id={`${row.key}-description`}
                 value={row.description}
-                placeholder="Muncul saat tombol Show more di-click di halaman publik."
+                placeholder="Shown when visitors click Show more on the public page."
                 onChange={(value) =>
                   onUpdate(row.key, { description: value })
                 }
@@ -282,7 +282,7 @@ export function ExperiencesFieldset({
 
       <Button type="button" variant="outline" onClick={onAdd}>
         <Plus className="h-4 w-4" />
-        Tambah Experience
+        Add experience
       </Button>
     </div>
   );

@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { WatchCategory, WatchStatus } from "./watch-data";
+import type { WatchCategory, WatchStatus } from "../data/watch-data";
 
 export type ImportedWatch = {
   externalId: string;
@@ -36,12 +36,12 @@ function parseCsv(text: string): CsvRow[] {
       record = [];
     } else field += char;
   }
-  if (quoted) throw new Error("CSV memiliki tanda kutip yang belum ditutup.");
+  if (quoted) throw new Error("The CSV contains an unclosed quotation mark.");
   record.push(field);
   if (record.some((value) => value.trim())) records.push(record);
   const headers = records.shift()?.map((value) => value.trim()) ?? [];
-  if (!headers.length) throw new Error("CSV kosong.");
-  if (records.length > 20000) throw new Error("CSV melebihi batas 20.000 baris.");
+  if (!headers.length) throw new Error("The CSV is empty.");
+  if (records.length > 20000) throw new Error("The CSV exceeds the 20,000-row limit.");
   return records.map((values) => Object.fromEntries(headers.map((header, index) => [header, (values[index] ?? "").trim()])));
 }
 
@@ -82,7 +82,7 @@ function titleKey(title: string, year: number | null) {
 export function parseNetflixCsv(text: string, dateOrder: "MDY" | "DMY"): ImportedWatch[] {
   const rows = parseCsv(text);
   if (!rows.length || !["title", "date"].every((name) => Object.keys(rows[0]).some((key) => key.toLowerCase() === name))) {
-    throw new Error("CSV Netflix harus memiliki kolom Title dan Date.");
+    throw new Error("The Netflix CSV must contain Title and Date columns.");
   }
   const entries = new Map<string, ImportedWatch>();
   for (const row of rows) {
@@ -90,7 +90,7 @@ export function parseNetflixCsv(text: string, dateOrder: "MDY" | "DMY"): Importe
     if (!rawTitle) continue;
     const rawDate = csvValue(row, "Date");
     const date = parseDate(rawDate, dateOrder);
-    if (rawDate && !date) throw new Error(`Tanggal Netflix tidak dikenali: ${rawDate.slice(0, 40)}. Periksa pilihan format tanggal.`);
+    if (rawDate && !date) throw new Error(`Unrecognized Netflix date: ${rawDate.slice(0, 40)}. Check the selected date format.`);
     const series = /^(.*?):\s*(?:Season|Series|Part|Limited Series)\s*\d*\s*:/i.exec(rawTitle);
     const title = (series?.[1] || rawTitle).slice(0, 200);
     const key = stableId("netflix", titleKey(title, null));
@@ -121,7 +121,7 @@ export function parseLetterboxdCsv(files: Array<{ name: string; text: string }>)
       // provides the actual viewing date.
       const diaryDate = /diary\.csv$/i.test(file.name) ? csvValue(row, "Watched Date", "WatchedDate", "Date") : "";
       const watchedAt = parseDate(diaryDate);
-      if (diaryDate && !watchedAt) throw new Error(`Tanggal diary Letterboxd tidak dikenali: ${diaryDate.slice(0, 40)}.`);
+      if (diaryDate && !watchedAt) throw new Error(`Unrecognized Letterboxd diary date: ${diaryDate.slice(0, 40)}.`);
       const rawRating = Number(csvValue(row, "Rating"));
       const rating = rawRating > 0 && rawRating <= 5 ? Math.round(rawRating * 2) : null;
       entries.set(key, {
@@ -131,6 +131,6 @@ export function parseLetterboxdCsv(files: Array<{ name: string; text: string }>)
       });
     }
   }
-  if (!entries.size) throw new Error("CSV Letterboxd tidak berisi film yang dapat diimpor.");
+  if (!entries.size) throw new Error("The Letterboxd CSV contains no films to import.");
   return [...entries.values()];
 }

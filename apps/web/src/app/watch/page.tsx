@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { WatchCatalog } from '@/features/watch/WatchCatalog';
-import { getWatchEntries } from '@/features/watch/watch-data';
+import { WatchCatalog } from '@/features/watch/components/public/WatchCatalog';
+import { getWatchEntries } from '@/features/watch/data/watch-data';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Watch Journal | super.profile',
-  description: 'Film, series, dan anime yang saya tonton.',
+  description: 'Films, series, and anime I have watched.',
 };
 
 export default async function WatchPage() {

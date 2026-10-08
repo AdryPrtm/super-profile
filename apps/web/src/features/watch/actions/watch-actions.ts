@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@super-profile-dry/db";
 import { hasAdminAccess } from "@/features/profile-content/auth/admin-access";
-import type { WatchCategory, WatchStatus } from "./watch-data";
+import type { WatchCategory, WatchStatus } from "../data/watch-data";
 
 const categories: WatchCategory[] = ["film", "series", "anime"];
 const statuses: WatchStatus[] = ["completed", "watching", "planned", "paused", "dropped"];
@@ -24,16 +24,16 @@ function readEntry(formData: FormData) {
   const posterText = optionalText(formData.get("posterUrl"), 1000);
 
   if (!title || !categories.includes(category) || !statuses.includes(status)) {
-    throw new Error("Judul, kategori, atau status tidak valid.");
+    throw new Error("Invalid title, category, or status.");
   }
 
   const year = yearText ? Number(yearText) : null;
   const rating = ratingText ? Number(ratingText) : null;
   if (year !== null && (!Number.isInteger(year) || year < 1888 || year > 2100)) {
-    throw new Error("Tahun tidak valid.");
+    throw new Error("Invalid year.");
   }
   if (rating !== null && (!Number.isInteger(rating) || rating < 1 || rating > 10)) {
-    throw new Error("Rating harus 1 sampai 10.");
+    throw new Error("Rating must be between 1 and 10.");
   }
 
   let posterUrl: string | null = null;
@@ -43,16 +43,16 @@ function readEntry(formData: FormData) {
       if (!(["http:", "https:"].includes(url.protocol))) throw new Error();
       posterUrl = url.toString();
     } catch {
-      throw new Error("URL poster harus menggunakan http atau https.");
+      throw new Error("Poster URL must use HTTP or HTTPS.");
     }
   }
 
   let watchedAt: Date | null = null;
   if (dateText) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateText)) throw new Error("Tanggal tidak valid.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateText)) throw new Error("Invalid date.");
     watchedAt = new Date(`${dateText}T12:00:00.000Z`);
     if (Number.isNaN(watchedAt.getTime()) || watchedAt.toISOString().slice(0, 10) !== dateText) {
-      throw new Error("Tanggal tidak valid.");
+      throw new Error("Invalid date.");
     }
   }
 

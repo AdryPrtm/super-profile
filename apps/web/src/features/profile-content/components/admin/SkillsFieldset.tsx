@@ -29,12 +29,12 @@ export function SkillsFieldset({
     <div className="space-y-3">
       {rows.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border/60 px-4 py-6 text-center text-sm text-muted-foreground">
-          Belum ada skill. Tambahkan lewat tombol di bawah.
+          No skills yet. Use the button below to add one.
         </p>
       ) : null}
 
       {rows.map((row, index) => {
-        const label = row.name.trim() || "skill baru";
+        const label = row.name.trim() || "new skill";
 
         return (
           <div
@@ -48,13 +48,13 @@ export function SkillsFieldset({
                 className="h-10 w-10 border border-border/60 bg-background p-1.5"
               />
               <p className="flex-1 truncate text-sm font-medium">
-                {row.name.trim() || "Skill baru"}
+                {row.name.trim() || "New skill"}
               </p>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={`Pindahkan ${label} ke atas`}
+                aria-label={`Move ${label} up`}
                 disabled={index === 0}
                 onClick={() => onMove(row.key, -1)}
               >
@@ -64,7 +64,7 @@ export function SkillsFieldset({
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={`Pindahkan ${label} ke bawah`}
+                aria-label={`Move ${label} down`}
                 disabled={index === rows.length - 1}
                 onClick={() => onMove(row.key, 1)}
               >
@@ -74,7 +74,7 @@ export function SkillsFieldset({
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={`Hapus ${label}`}
+                aria-label={`Remove ${label}`}
                 onClick={() => onRemove(row.key)}
               >
                 <Trash2 className="h-4 w-4" />
@@ -83,7 +83,7 @@ export function SkillsFieldset({
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor={`${row.key}-name`}>Judul</Label>
+                <Label htmlFor={`${row.key}-name`}>Name</Label>
                 <Input
                   id={`${row.key}-name`}
                   name="skillName"
@@ -95,7 +95,7 @@ export function SkillsFieldset({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`${row.key}-category`}>Sub Judul</Label>
+                <Label htmlFor={`${row.key}-category`}>Subtitle</Label>
                 <Input
                   id={`${row.key}-category`}
                   name="skillCategory"
@@ -107,7 +107,7 @@ export function SkillsFieldset({
                 />
               </div>
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor={`${row.key}-logo`}>Link Logo</Label>
+                <Label htmlFor={`${row.key}-logo`}>Logo URL</Label>
                 <Input
                   id={`${row.key}-logo`}
                   name="skillLogo"
@@ -126,7 +126,7 @@ export function SkillsFieldset({
 
       <Button type="button" variant="outline" onClick={onAdd}>
         <Plus className="h-4 w-4" />
-        Tambah Skill
+        Add skill
       </Button>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Clapperboard, Search, Star, Tv2, Sparkles } from "lucide-react";
-import type { WatchCategory, WatchEntry, WatchStatus } from "./watch-data";
+import type { WatchCategory, WatchEntry, WatchStatus } from "../../data/watch-data";
 
 const categoryLabels: Record<WatchCategory, string> = {
   film: "Film",
@@ -11,14 +11,14 @@ const categoryLabels: Record<WatchCategory, string> = {
 };
 
 const statusLabels: Record<WatchStatus, string> = {
-  completed: "Selesai ditonton",
-  watching: "Sedang ditonton",
-  planned: "Ingin ditonton",
-  paused: "Ditunda",
-  dropped: "Dihentikan",
+  completed: "Watched",
+  watching: "Watching",
+  planned: "Plan to watch",
+  paused: "Paused",
+  dropped: "Dropped",
 };
 
-const sourceLabels = { manual: "Pilihan saya", anilist: "AniList", netflix: "Netflix", letterboxd: "Letterboxd" };
+const sourceLabels = { manual: "Added by me", anilist: "AniList", netflix: "Netflix", letterboxd: "Letterboxd" };
 
 const categoryIcons = {
   film: Clapperboard,
@@ -26,7 +26,7 @@ const categoryIcons = {
   anime: Sparkles,
 };
 
-const watchedDateFormatter = new Intl.DateTimeFormat("id-ID", {
+const watchedDateFormatter = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
   month: "short",
   year: "numeric",
@@ -42,11 +42,11 @@ export function WatchCatalog({ entries, hasDatabaseError = false }: { entries: W
   const [status, setStatus] = useState<StatusFilter>("all");
 
   const results = useMemo(() => {
-    const search = query.trim().toLocaleLowerCase("id-ID");
+    const search = query.trim().toLocaleLowerCase("en-US");
     return entries.filter((entry) =>
       (category === "all" || entry.category === category) &&
       (status === "all" || entry.status === status) &&
-      (!search || `${entry.title} ${entry.notes ?? ""} ${entry.year ?? ""}`.toLocaleLowerCase("id-ID").includes(search)),
+      (!search || `${entry.title} ${entry.notes ?? ""} ${entry.year ?? ""}`.toLocaleLowerCase("en-US").includes(search)),
     );
   }, [entries, query, category, status]);
 
@@ -61,22 +61,22 @@ export function WatchCatalog({ entries, hasDatabaseError = false }: { entries: W
         <div className="relative mx-auto max-w-6xl px-6 pb-12 pt-16 sm:pb-16 sm:pt-24">
           <p className="mb-5 text-xs font-semibold uppercase tracking-[0.28em] text-violet-300">My watch journal</p>
           <h1 className="max-w-3xl text-5xl font-semibold tracking-[-0.055em] sm:text-7xl">
-            Semua <span className="text-violet-300">tontonan saya.</span>
+            Everything <span className="text-violet-300">I watch.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-white/55 sm:text-lg">
-            Film, series, dan anime yang sudah saya tonton, sedang saya ikuti, atau masuk daftar berikutnya. Cari judul dan jelajahi koleksinya di sini.
+            Films, series, and anime I have watched, am following, or plan to watch next. Search and explore my collection here.
           </p>
           <div className="mt-10 flex flex-wrap gap-x-10 gap-y-5 border-t border-white/10 pt-7">
-            <div><strong className="block text-3xl font-semibold tabular-nums">{completedCount}</strong><span className="text-sm text-white/45">Selesai ditonton</span></div>
-            <div><strong className="block text-3xl font-semibold tabular-nums">{watchingCount}</strong><span className="text-sm text-white/45">Sedang ditonton</span></div>
-            <div><strong className="block text-3xl font-semibold tabular-nums">{entries.length}</strong><span className="text-sm text-white/45">Judul tercatat</span></div>
+            <div><strong className="block text-3xl font-semibold tabular-nums">{completedCount}</strong><span className="text-sm text-white/45">Watched</span></div>
+            <div><strong className="block text-3xl font-semibold tabular-nums">{watchingCount}</strong><span className="text-sm text-white/45">Watching</span></div>
+            <div><strong className="block text-3xl font-semibold tabular-nums">{entries.length}</strong><span className="text-sm text-white/45">Titles logged</span></div>
           </div>
         </div>
       </div>
 
-      <section className="mx-auto max-w-6xl px-6 py-10 sm:py-14" aria-label="Katalog tontonan">
+      <section className="mx-auto max-w-6xl px-6 py-10 sm:py-14" aria-label="Watch catalog">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter kategori">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
             {(["all", "film", "series", "anime"] as const).map((item) => (
               <button
                 key={item}
@@ -85,47 +85,47 @@ export function WatchCatalog({ entries, hasDatabaseError = false }: { entries: W
                 onClick={() => setCategory(item)}
                 className={`min-h-11 cursor-pointer rounded-full border px-5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300 ${category === item ? "border-violet-300 bg-violet-300 text-[#171122]" : "border-white/25 text-white/75 hover:border-white/50 hover:text-white"}`}
               >
-                {item === "all" ? "Semua" : categoryLabels[item]}
+                {item === "all" ? "All" : categoryLabels[item]}
               </button>
             ))}
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <label className="relative block">
               <Search aria-hidden="true" className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-              <span className="sr-only">Cari judul tontonan</span>
+              <span className="sr-only">Search watch titles</span>
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Cari judul..."
+                placeholder="Search titles..."
                 className="h-11 w-full rounded-xl border border-white/15 bg-white/5 pl-10 pr-4 text-sm text-white outline-none placeholder:text-white/35 focus:border-violet-300 sm:w-56"
               />
             </label>
             <label className="block">
-              <span className="sr-only">Filter status tontonan</span>
+              <span className="sr-only">Filter by watch status</span>
               <select value={status} onChange={(event) => setStatus(event.target.value as StatusFilter)} className="h-11 w-full rounded-xl border border-white/15 bg-[#181922] px-4 text-sm text-white outline-none focus:border-violet-300 sm:w-48">
-                <option value="all">Semua status</option>
-                <option value="completed">Selesai ditonton</option>
-                <option value="watching">Sedang ditonton</option>
-                <option value="planned">Ingin ditonton</option>
-                <option value="paused">Ditunda</option>
-                <option value="dropped">Dihentikan</option>
+                <option value="all">All statuses</option>
+                <option value="completed">Watched</option>
+                <option value="watching">Watching</option>
+                <option value="planned">Plan to watch</option>
+                <option value="paused">Paused</option>
+                <option value="dropped">Dropped</option>
               </select>
             </label>
           </div>
         </div>
 
         <div className="mb-6 mt-10 flex items-baseline justify-between gap-4">
-          <h2 className="text-2xl font-semibold tracking-tight">Koleksi tontonan</h2>
-          <span aria-live="polite" className="text-sm text-white/70">{results.length} judul</span>
+          <h2 className="text-2xl font-semibold tracking-tight">Watch collection</h2>
+          <span aria-live="polite" className="text-sm text-white/70">{results.length} titles</span>
         </div>
 
         {hasDatabaseError ? (
-          <div className="rounded-2xl border border-rose-400/25 bg-rose-400/10 p-6 text-sm text-rose-100">Katalog belum dapat dimuat. Silakan coba lagi nanti.</div>
+          <div className="rounded-2xl border border-rose-400/25 bg-rose-400/10 p-6 text-sm text-rose-100">The catalog could not be loaded. Please try again later.</div>
         ) : results.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-6 py-16 text-center">
             <Clapperboard aria-hidden="true" className="mx-auto mb-4 h-9 w-9 text-violet-300/70" />
-            <h3 className="text-lg font-medium">{entries.length ? "Tidak ada judul yang cocok" : "Koleksi belum dimulai"}</h3>
-            <p className="mt-2 text-sm text-white/45">{entries.length ? "Coba ubah pencarian atau filter yang dipilih." : "Judul tontonan akan tampil di sini setelah ditambahkan."}</p>
+            <h3 className="text-lg font-medium">{entries.length ? "No matching titles" : "The collection is empty"}</h3>
+            <p className="mt-2 text-sm text-white/45">{entries.length ? "Try a different search or filter." : "Titles will appear here once they are added."}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4">
@@ -137,7 +137,7 @@ export function WatchCatalog({ entries, hasDatabaseError = false }: { entries: W
                     {entry.posterUrl ? (
                       // External poster URLs are entered by the site owner and validated on save.
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={entry.posterUrl} alt={`Poster ${entry.title}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" />
+                      <img src={entry.posterUrl} alt={`Poster for ${entry.title}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" />
                     ) : (
                       <div className="flex h-full flex-col items-center justify-center gap-4 p-5 text-center">
                         <Icon aria-hidden="true" className="h-10 w-10 text-violet-200/55" />
@@ -153,7 +153,7 @@ export function WatchCatalog({ entries, hasDatabaseError = false }: { entries: W
                     </div>
                     <p className="mt-2 text-xs text-white/70">{entry.year ? `${entry.year} · ` : ""}{statusLabels[entry.status] ?? entry.status}</p>
                     <p className="mt-1 text-xs text-violet-200/75">{sourceLabels[entry.source] ?? entry.source}</p>
-                    {entry.watchedAt ? <p className="mt-1 text-xs text-white/60">Ditonton {watchedDateFormatter.format(new Date(entry.watchedAt))}</p> : null}
+                    {entry.watchedAt ? <p className="mt-1 text-xs text-white/60">Watched {watchedDateFormatter.format(new Date(entry.watchedAt))}</p> : null}
                     {entry.notes ? <p className="mt-4 line-clamp-3 border-t border-white/20 pt-3 text-sm leading-6 text-white/75">{entry.notes}</p> : null}
                   </div>
                 </article>

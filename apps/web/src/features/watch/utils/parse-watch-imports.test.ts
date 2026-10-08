@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { parseLetterboxdCsv, parseNetflixCsv } from "./watch-import-data";
+import { parseLetterboxdCsv, parseNetflixCsv } from "./parse-watch-imports";
 
 describe("watch history imports", () => {
   it("Netflix groups episodes and keeps the latest viewing date", () => {

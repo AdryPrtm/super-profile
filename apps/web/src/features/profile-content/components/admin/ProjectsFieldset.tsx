@@ -82,13 +82,13 @@ function ProjectRowCard({
     <div className="space-y-4 rounded-lg border border-border/60 p-4">
       <div className="flex items-center gap-3">
         <p className="flex-1 truncate text-sm font-medium">
-          {row.title.trim() || "Project baru"}
+          {row.title.trim() || "New project"}
         </p>
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          aria-label={`Hapus ${row.title.trim() || "project baru"}`}
+          aria-label={`Remove ${row.title.trim() || "new project"}`}
           onClick={() => onRemove(row.key)}
         >
           <Trash2 className="h-4 w-4" />
@@ -96,7 +96,7 @@ function ProjectRowCard({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor={`${row.key}-title`}>Judul</Label>
+        <Label htmlFor={`${row.key}-title`}>Title</Label>
         <Input
           id={`${row.key}-title`}
           name="projectTitle"
@@ -107,14 +107,14 @@ function ProjectRowCard({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor={`${row.key}-description`}>Deskripsi</Label>
+        <Label htmlFor={`${row.key}-description`}>Description</Label>
         <textarea
           id={`${row.key}-description`}
           name="projectDescription"
           rows={3}
           className={textareaClass}
           value={row.description}
-          placeholder="Ringkas apa yang kamu bangun dan hasilnya."
+          placeholder="Summarize what you built and its impact."
           onChange={(event) =>
             onUpdate(row.key, { description: event.target.value })
           }
@@ -131,8 +131,8 @@ function ProjectRowCard({
 
         {availableTech.length === 0 && orphanTech.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Belum ada skill. Tambahkan dulu di section Skills, lalu pilih di
-            sini.
+            No skills yet. Add them in the Skills section, then select them
+            here.
           </p>
         ) : (
           <div className="flex flex-wrap gap-2">
@@ -162,7 +162,7 @@ function ProjectRowCard({
                 key={tech}
                 type="button"
                 onClick={() => toggleTech(tech)}
-                title="Skill ini sudah tidak ada di daftar Skills. Klik untuk melepas."
+                title="This skill is no longer in the Skills list. Click to remove it."
                 className="flex items-center gap-1 rounded-full border border-dashed border-destructive/60 px-3 py-1 text-xs text-destructive"
               >
                 {tech}
@@ -174,7 +174,7 @@ function ProjectRowCard({
       </div>
 
       <div className="space-y-2">
-        <Label>Gambar</Label>
+        <Label>Images</Label>
         <input
           type="hidden"
           name="projectImages"
@@ -191,7 +191,7 @@ function ProjectRowCard({
                 <img src={url} alt="" className="h-full w-full object-cover" />
                 <button
                   type="button"
-                  aria-label="Hapus gambar ini"
+                  aria-label="Remove this image"
                   onClick={() =>
                     onUpdate(row.key, {
                       images: row.images.filter((item) => item !== url),
@@ -228,10 +228,10 @@ function ProjectRowCard({
             ) : (
               <ImagePlus className="h-4 w-4" />
             )}
-            {uploading ? "Mengunggah..." : "Upload Gambar"}
+            {uploading ? "Uploading..." : "Upload images"}
           </Button>
           <span className="text-xs text-muted-foreground">
-            PNG, JPG, WEBP, GIF, atau SVG. Maksimal 5 MB per gambar.
+            PNG, JPG, WEBP, GIF, or SVG. Maximum 5 MB per image.
           </span>
         </div>
 
@@ -262,7 +262,7 @@ export function ProjectsFieldset({
     <div className="space-y-3">
       {rows.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border/60 px-4 py-6 text-center text-sm text-muted-foreground">
-          Belum ada project. Tambahkan lewat tombol di bawah.
+          No projects yet. Use the button below to add one.
         </p>
       ) : null}
 
@@ -278,7 +278,7 @@ export function ProjectsFieldset({
 
       <Button type="button" variant="outline" onClick={onAdd}>
         <Plus className="h-4 w-4" />
-        Tambah Project
+        Add project
       </Button>
     </div>
   );

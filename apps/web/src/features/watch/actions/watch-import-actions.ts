@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@super-profile-dry/db";
 import { hasAdminAccess } from "@/features/profile-content/auth/admin-access";
-import { parseLetterboxdCsv, parseNetflixCsv, type ImportedWatch } from "./watch-import-data";
+import { parseLetterboxdCsv, parseNetflixCsv, type ImportedWatch } from "../utils/parse-watch-imports";
 
 type AniListEntry = {
   status: string;
@@ -44,13 +44,13 @@ function finishImport(source: string, count: number) {
 
 function importError(source: string, error: unknown): never {
   console.error(`Failed to import ${source} watch history`, error);
-  const message = error instanceof Error ? error.message : "Impor gagal. Periksa berkas atau akun dan coba lagi.";
+  const message = error instanceof Error ? error.message : "Import failed. Check the file or account and try again.";
   redirect(`/admin/watch?importError=${encodeURIComponent(message.slice(0, 180))}`);
 }
 
 async function readCsvFile(value: FormDataEntryValue | null) {
   if (!(value instanceof File) || !value.name.toLowerCase().endsWith(".csv") || value.size === 0 || value.size > 5 * 1024 * 1024) {
-    throw new Error("Pilih berkas CSV dengan ukuran maksimal 5 MB.");
+    throw new Error("Choose a CSV file no larger than 5 MB.");
   }
   return { name: value.name, text: await value.text() };
 }
@@ -71,10 +71,10 @@ export async function importLetterboxdCsv(formData: FormData) {
   let count: number;
   try {
     const values = formData.getAll("files");
-    if (!values.length || values.length > 3) throw new Error("Pilih watched.csv, diary.csv, dan/atau ratings.csv.");
+    if (!values.length || values.length > 3) throw new Error("Choose watched.csv, diary.csv, and/or ratings.csv.");
     const files = await Promise.all(values.map(readCsvFile));
     if (!files.every((file) => /(?:watched|diary|ratings)\.csv$/i.test(file.name))) {
-      throw new Error("Pilih CSV watched, diary, atau ratings dari ekspor Letterboxd.");
+      throw new Error("Choose watched, diary, or ratings CSV files from your Letterboxd export.");
     }
     count = await saveImported(parseLetterboxdCsv(files));
   } catch (error) { importError("Letterboxd", error); }
@@ -86,7 +86,7 @@ export async function syncAniList(formData: FormData) {
   let count: number;
   try {
     const username = String(formData.get("username") ?? "").trim();
-    if (!/^[A-Za-z0-9_]{2,30}$/.test(username)) throw new Error("Masukkan username AniList yang valid.");
+    if (!/^[A-Za-z0-9_]{2,30}$/.test(username)) throw new Error("Enter a valid AniList username.");
     const response = await fetch("https://graphql.anilist.co", {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -97,11 +97,11 @@ export async function syncAniList(formData: FormData) {
       cache: "no-store",
       signal: AbortSignal.timeout(15000),
     });
-    if (!response.ok) throw new Error(response.status === 404 ? "Akun AniList tidak ditemukan." : `AniList tidak dapat dihubungi (${response.status}).`);
+    if (!response.ok) throw new Error(response.status === 404 ? "AniList account not found." : `Could not reach AniList (${response.status}).`);
     const result = await response.json() as { data?: { MediaListCollection?: { lists?: Array<{ entries?: AniListEntry[] }> } }; errors?: Array<{ message: string }> };
     if (result.errors?.length) throw new Error(result.errors[0].message);
     const lists = result.data?.MediaListCollection?.lists;
-    if (!lists) throw new Error("Daftar anime tidak ditemukan atau akun bersifat privat.");
+    if (!lists) throw new Error("Anime list not found, or the account is private.");
     const entries: ImportedWatch[] = lists.flatMap((list) => list.entries ?? []).flatMap((item) => {
       const media = item.media;
       if (!media) return [];
