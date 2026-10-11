@@ -24,7 +24,7 @@
   "dependencies": {
     "@trpc/server": "catalog:",
     "@trpc/client": "catalog:",
-    "next": "catalog:",
+    "next": "15.5.8",
     "dotenv": "catalog:",
     "zod": "catalog:",
     "@super-profile-dry/auth": "workspace:*",
