@@ -4,26 +4,67 @@ import {
   type ProfileContent,
   type Project,
   type Skill,
+  type SocialLink,
 } from "@/features/profile-content/data/profile-content";
 import { getText, splitLines } from "@/features/profile-content/utils/form-data";
 
-function parseSkills(value: string): Skill[] {
-  return splitLines(value).flatMap((line) => {
-    const [name = "", category = ""] = line.split("|").map((part) => part.trim());
+function readEntry(value: FormDataEntryValue | undefined) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function parseSkills(formData: FormData): Skill[] {
+  const names = formData.getAll("skillName");
+  const categories = formData.getAll("skillCategory");
+  const logos = formData.getAll("skillLogo");
+
+  return names.flatMap((rawName, index) => {
+    const name = readEntry(rawName);
 
     if (!name) {
       return [];
     }
 
-    return [{ name, category }];
+    return [
+      {
+        name,
+        category: readEntry(categories[index]),
+        logo: readEntry(logos[index]),
+      },
+    ];
   });
 }
 
-function parseProjects(value: string): Project[] {
-  return splitLines(value).flatMap((line) => {
-    const [title = "", description = "", tags = "", link = "#"] = line
-      .split("|")
-      .map((part) => part.trim());
+function readJsonStringArray(value: FormDataEntryValue | undefined) {
+  const raw = readEntry(value);
+
+  if (!raw) {
+    return [];
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .filter((item): item is string => typeof item === "string")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+function parseProjects(formData: FormData): Project[] {
+  const titles = formData.getAll("projectTitle");
+  const descriptions = formData.getAll("projectDescription");
+  const techStacks = formData.getAll("projectTech");
+  const imageLists = formData.getAll("projectImages");
+
+  return titles.flatMap((rawTitle, index) => {
+    const title = readEntry(rawTitle);
 
     if (!title) {
       return [];
@@ -32,28 +73,71 @@ function parseProjects(value: string): Project[] {
     return [
       {
         title,
-        description,
-        tags: tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean),
-        link: link || "#",
+        description: readEntry(descriptions[index]),
+        tech: readJsonStringArray(techStacks[index]),
+        images: readJsonStringArray(imageLists[index]),
       },
     ];
   });
 }
 
-function parseExperiences(value: string): Experience[] {
-  return splitLines(value).flatMap((line) => {
-    const [period = "", role = "", company = "", description = ""] = line
-      .split("|")
-      .map((part) => part.trim());
+function parseExperiences(formData: FormData): Experience[] {
+  const roles = formData.getAll("experienceRole");
+  const companies = formData.getAll("experienceCompany");
+  const locationTypes = formData.getAll("experienceLocationType");
+  const startMonths = formData.getAll("experienceStartMonth");
+  const startYears = formData.getAll("experienceStartYear");
+  const endMonths = formData.getAll("experienceEndMonth");
+  const endYears = formData.getAll("experienceEndYear");
+  const currentFlags = formData.getAll("experienceIsCurrent");
+  const periods = formData.getAll("experiencePeriod");
+  const descriptions = formData.getAll("experienceDescription");
+
+  return roles.flatMap((rawRole, index) => {
+    const role = readEntry(rawRole);
 
     if (!role) {
       return [];
     }
 
-    return [{ period, role, company, description }];
+    const isCurrent = readEntry(currentFlags[index]) === "1";
+
+    return [
+      {
+        role,
+        company: readEntry(companies[index]),
+        locationType: readEntry(locationTypes[index]),
+        startMonth: readEntry(startMonths[index]),
+        startYear: readEntry(startYears[index]),
+        endMonth: isCurrent ? "" : readEntry(endMonths[index]),
+        endYear: isCurrent ? "" : readEntry(endYears[index]),
+        isCurrent,
+        period: readEntry(periods[index]),
+        description: readEntry(descriptions[index]),
+      },
+    ];
+  });
+}
+
+function parseSocials(formData: FormData): SocialLink[] {
+  const labels = formData.getAll("socialLabel");
+  const urls = formData.getAll("socialUrl");
+  const icons = formData.getAll("socialIcon");
+
+  return urls.flatMap((rawUrl, index) => {
+    const url = readEntry(rawUrl);
+
+    if (!url) {
+      return [];
+    }
+
+    return [
+      {
+        label: readEntry(labels[index]),
+        url,
+        icon: readEntry(icons[index]),
+      },
+    ];
   });
 }
 
@@ -84,9 +168,9 @@ export function buildProfileContentFromFormData(formData: FormData) {
       paragraphs:
         aboutParagraphs.length > 0 ? aboutParagraphs : fallback.about.paragraphs,
     },
-    skills: parseSkills(getText(formData, "skills", "")),
-    projects: parseProjects(getText(formData, "projects", "")),
-    experiences: parseExperiences(getText(formData, "experiences", "")),
+    skills: parseSkills(formData),
+    projects: parseProjects(formData),
+    experiences: parseExperiences(formData),
     contact: {
       eyebrow: getText(formData, "contactEyebrow", fallback.contact.eyebrow),
       title: getText(formData, "contactTitle", fallback.contact.title),
@@ -102,16 +186,7 @@ export function buildProfileContentFromFormData(formData: FormData) {
         fallback.contact.buttonLabel,
       ),
     },
-    socialLinks: {
-      github: getText(formData, "socialGithub", fallback.socialLinks.github),
-      linkedin: getText(
-        formData,
-        "socialLinkedin",
-        fallback.socialLinks.linkedin,
-      ),
-      twitter: getText(formData, "socialTwitter", fallback.socialLinks.twitter),
-      email: getText(formData, "socialEmail", fallback.socialLinks.email),
-    },
+    socials: parseSocials(formData),
     footer: {
       copyrightName: getText(
         formData,
@@ -120,26 +195,4 @@ export function buildProfileContentFromFormData(formData: FormData) {
       ),
     },
   } satisfies ProfileContent;
-}
-
-export function skillsToText(skills: Skill[]) {
-  return skills.map((skill) => `${skill.name} | ${skill.category}`).join("\n");
-}
-
-export function projectsToText(projects: Project[]) {
-  return projects
-    .map(
-      (project) =>
-        `${project.title} | ${project.description} | ${project.tags.join(", ")} | ${project.link}`,
-    )
-    .join("\n");
-}
-
-export function experiencesToText(experiences: Experience[]) {
-  return experiences
-    .map(
-      (experience) =>
-        `${experience.period} | ${experience.role} | ${experience.company} | ${experience.description}`,
-    )
-    .join("\n");
 }

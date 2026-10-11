@@ -1,3 +1,4 @@
+import { ExperienceCard } from "@/features/profile-content/components/public/ExperienceCard";
 import type { Experience } from "@/features/profile-content/data/profile-content";
 
 type ExperienceSectionProps = {
@@ -6,34 +7,19 @@ type ExperienceSectionProps = {
 
 export function ExperienceSection({ experiences }: ExperienceSectionProps) {
   return (
-    <section id="experience" className="px-6 py-24">
-      <div className="mx-auto max-w-2xl">
-        <p className="mb-12 text-sm font-medium uppercase tracking-widest text-muted-foreground">
-          Experience
-        </p>
-
-        <div className="space-y-8">
-          {experiences.map((experience) => (
-            <div
-              key={`${experience.period}-${experience.role}-${experience.company}`}
-              className="group relative border-l-2 border-border/50 pl-6 transition-colors hover:border-foreground/30"
-            >
-              <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-border transition-colors group-hover:bg-foreground/50" />
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {experience.period}
-              </p>
-              <h3 className="mt-1 text-base font-medium">
-                {experience.role}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {experience.company}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground/80">
-                {experience.description}
-              </p>
-            </div>
+    <section id="experience" className="portfolio-section bg-[var(--portfolio-surface)]">
+      <div className="portfolio-shell py-20 sm:py-28">
+        <p className="portfolio-label mb-5 text-[var(--portfolio-accent)]">05 / Journey</p>
+        <h2 className="portfolio-heading mb-12">Experience<span className="text-[var(--portfolio-accent)]">.</span></h2>
+        <ol className="border-t border-[var(--portfolio-border)]">
+          {experiences.map((experience, index) => (
+            <ExperienceCard
+              key={`${experience.role}-${index}`}
+              experience={experience}
+              index={index}
+            />
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

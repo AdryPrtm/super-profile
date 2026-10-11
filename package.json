@@ -28,17 +28,19 @@
     "db:push": "bun run --filter @super-profile-dry/db db:push",
     "db:studio": "bun run --filter @super-profile-dry/db db:studio",
     "db:generate": "bun run --filter @super-profile-dry/db db:generate",
-    "db:migrate": "bun run --filter @super-profile-dry/db db:migrate"
+    "db:migrate": "bun run --filter @super-profile-dry/db db:migrate",
+    "db:secure": "bun run --filter @super-profile-dry/db db:secure"
   },
   "dependencies": {
     "dotenv": "^17.2.2",
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@types/node": "^22.13.11",
+    "baseline-browser-mapping": "^2.11.20",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
-    "tsdown": "^0.15.5",
-    "@types/node": "^22.13.11"
+    "tsdown": "^0.15.5"
   },
   "packageManager": "bun@1.3.0"
 }

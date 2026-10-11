@@ -3,14 +3,12 @@ import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { saveAdminProfileContent } from "@/features/profile-content/actions/save-profile-content-action";
 import { AdminFormSection } from "@/features/profile-content/components/admin/AdminFormSection";
+import { ExperiencesEditor } from "@/features/profile-content/components/admin/ExperiencesEditor";
 import { ProfileField } from "@/features/profile-content/components/admin/ProfileField";
 import { ProfileTextareaField } from "@/features/profile-content/components/admin/ProfileTextareaField";
+import { SkillsAndProjectsEditor } from "@/features/profile-content/components/admin/SkillsAndProjectsEditor";
+import { SocialsEditor } from "@/features/profile-content/components/admin/SocialsEditor";
 import type { ProfileContent } from "@/features/profile-content/data/profile-content";
-import {
-  experiencesToText,
-  projectsToText,
-  skillsToText,
-} from "@/features/profile-content/utils/profile-content-codec";
 
 type AdminProfileFormProps = {
   content: ProfileContent;
@@ -79,35 +77,12 @@ export function AdminProfileForm({ content }: AdminProfileFormProps) {
         />
       </AdminFormSection>
 
-      <AdminFormSection title="Skills">
-        <ProfileTextareaField
-          label="Skills"
-          name="skills"
-          defaultValue={skillsToText(content.skills)}
-          placeholder="React | Frontend"
-          rows={8}
-        />
-      </AdminFormSection>
+      <SkillsAndProjectsEditor
+        skills={content.skills}
+        projects={content.projects}
+      />
 
-      <AdminFormSection title="Projects">
-        <ProfileTextareaField
-          label="Projects"
-          name="projects"
-          defaultValue={projectsToText(content.projects)}
-          placeholder="Project Name | Short description | Next.js, Prisma | https://example.com"
-          rows={8}
-        />
-      </AdminFormSection>
-
-      <AdminFormSection title="Experience">
-        <ProfileTextareaField
-          label="Experiences"
-          name="experiences"
-          defaultValue={experiencesToText(content.experiences)}
-          placeholder="2024 - Present | Role | Company | What you did"
-          rows={8}
-        />
-      </AdminFormSection>
+      <ExperiencesEditor experiences={content.experiences} />
 
       <AdminFormSection title="Contact">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -143,30 +118,7 @@ export function AdminProfileForm({ content }: AdminProfileFormProps) {
         </div>
       </AdminFormSection>
 
-      <AdminFormSection title="Social Links">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ProfileField
-            label="GitHub"
-            name="socialGithub"
-            defaultValue={content.socialLinks.github}
-          />
-          <ProfileField
-            label="LinkedIn"
-            name="socialLinkedin"
-            defaultValue={content.socialLinks.linkedin}
-          />
-          <ProfileField
-            label="Twitter"
-            name="socialTwitter"
-            defaultValue={content.socialLinks.twitter}
-          />
-          <ProfileField
-            label="Email Link"
-            name="socialEmail"
-            defaultValue={content.socialLinks.email}
-          />
-        </div>
-      </AdminFormSection>
+      <SocialsEditor socials={content.socials} />
 
       <AdminFormSection title="Footer">
         <ProfileField

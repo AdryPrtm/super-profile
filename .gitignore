@@ -46,5 +46,6 @@ coverage
 # Misc
 *.tgz
 .cache
+.agents
 tmp
 temp

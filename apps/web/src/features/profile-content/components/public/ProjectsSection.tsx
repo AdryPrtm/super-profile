@@ -1,5 +1,4 @@
-import { ExternalLink } from "lucide-react";
-
+import { ProjectCard } from "@/features/profile-content/components/public/ProjectCard";
 import type { Project } from "@/features/profile-content/data/profile-content";
 
 type ProjectsSectionProps = {
@@ -8,41 +7,18 @@ type ProjectsSectionProps = {
 
 export function ProjectsSection({ projects }: ProjectsSectionProps) {
   return (
-    <section id="projects" className="px-6 py-24">
-      <div className="mx-auto max-w-2xl">
-        <p className="mb-12 text-sm font-medium uppercase tracking-widest text-muted-foreground">
-          Selected Projects
-        </p>
-
-        <div className="space-y-6">
-          {projects.map((project) => (
-            <a
-              key={`${project.title}-${project.link}`}
-              href={project.link}
-              className="group block rounded-2xl border border-border/50 p-6 transition-all duration-300 hover:border-border hover:bg-accent/30"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-3">
-                  <h3 className="text-lg font-medium group-hover:text-foreground">
-                    {project.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full bg-accent/80 px-2.5 py-0.5 text-xs text-muted-foreground"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground/50 transition-all group-hover:text-foreground" />
-              </div>
-            </a>
+    <section id="projects" className="portfolio-section">
+      <div className="portfolio-shell py-20 sm:py-28">
+        <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="portfolio-label mb-5 text-[var(--portfolio-accent)]">04 / Work</p>
+            <h2 className="portfolio-heading">Selected projects<span className="text-[var(--portfolio-accent)]">.</span></h2>
+          </div>
+          <p className="max-w-xs text-sm leading-relaxed text-[var(--portfolio-muted)]">A closer look at the ideas, systems, and details behind the work.</p>
+        </div>
+        <div className="grid gap-5 md:grid-cols-2">
+          {projects.map((project, index) => (
+            <ProjectCard key={`${project.title}-${index}`} project={project} index={index} />
           ))}
         </div>
       </div>
