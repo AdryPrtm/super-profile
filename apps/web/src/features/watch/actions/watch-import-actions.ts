@@ -24,11 +24,13 @@ async function saveImported(entries: ImportedWatch[]) {
   for (let i = 0; i < entries.length; i += 10) {
     const batch = entries.slice(i, i + 10);
     await Promise.all(batch.map(async (entry) => {
-      const { externalId, ...data } = entry;
+      const { externalId, posterUrl, ...data } = entry;
       await prisma.watchEntry.upsert({
         where: { externalId },
-        create: { externalId, ...data },
-        update: data,
+        create: { externalId, posterUrl, ...data },
+        // CSV exports contain no poster URL. Preserve an existing TMDB or
+        // manually selected poster when the same watch history is re-imported.
+        update: { ...data, ...(posterUrl ? { posterUrl } : {}) },
       });
       count++;
     }));

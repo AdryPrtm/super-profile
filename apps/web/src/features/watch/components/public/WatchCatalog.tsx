@@ -162,6 +162,14 @@ export function WatchCatalog({ entries, hasDatabaseError = false }: { entries: W
           </div>
         )}
       </section>
+      <footer className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/10 px-6 py-6 text-xs text-white/55">
+        <a href="https://www.themoviedb.org" target="_blank" rel="noreferrer" aria-label="The Movie Database (TMDB)" className="rounded bg-white px-2 py-1">
+          {/* Official logo from TMDB's Logos & Attribution page. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_2-9665a76b1ae401a510ec1e0ca40ddcb3b0cfe45f1d51b77a308fea0845885648.svg" alt="TMDB" className="h-5 w-auto" loading="lazy" />
+        </a>
+        <span>This product uses the TMDB API but is not endorsed or certified by TMDB.</span>
+      </footer>
     </main>
   );
 }

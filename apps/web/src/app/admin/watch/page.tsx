@@ -6,6 +6,7 @@ import { WatchAdminForm } from "@/features/watch/components/admin/WatchAdminForm
 import { DeleteWatchButton } from "@/features/watch/components/admin/WatchFormButtons";
 import { getWatchEntries } from "@/features/watch/data/watch-data";
 import { WatchImportForms } from "@/features/watch/components/admin/WatchImportForms";
+import { WatchPosterTools } from "@/features/watch/components/admin/WatchPosterTools";
 import type { WatchEntry } from "@/features/watch/data/watch-data";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +53,11 @@ export default async function WatchAdminPage({ searchParams }: WatchAdminPagePro
         {params.error || hasDatabaseError ? <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{hasDatabaseError ? "Data could not be loaded. Make sure the database is available and the Prisma schema has been applied." : "Changes could not be saved. Check the fields and try again."}</p> : null}
 
         <WatchImportForms />
+
+        <WatchPosterTools
+          missingCount={entries.filter((entry) => !entry.posterUrl && (entry.category === "film" || entry.category === "series")).length}
+          hasServerToken={Boolean(process.env.TMDB_READ_ACCESS_TOKEN?.trim())}
+        />
 
         <section className="rounded-xl border border-border bg-card p-5 sm:p-7">
           <h2 className="mb-5 text-xl font-semibold">Add a title</h2>

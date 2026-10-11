@@ -14,7 +14,7 @@ export function WatchImportForms() {
   return (
     <section className="rounded-xl border border-border bg-card p-5 sm:p-7" aria-labelledby="watch-import-heading">
       <h2 id="watch-import-heading" className="text-xl font-semibold">Import watch history</h2>
-      <p className="mt-2 text-sm text-muted-foreground">Importing again updates titles from the same source. Import tools are available only to the site admin.</p>
+      <p className="mt-2 text-sm text-muted-foreground">Importing again updates titles from the same source and keeps existing posters. Use the poster tool below after importing. Import tools are available only to the site admin.</p>
       <div className="mt-6 grid gap-5 lg:grid-cols-3">
         <form action={syncAniList} className="flex flex-col rounded-xl border border-border p-5">
           <h3 className="font-semibold">AniList</h3>
