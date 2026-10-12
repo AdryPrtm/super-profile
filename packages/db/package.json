@@ -28,6 +28,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "6.18.0",
     "@prisma/client": "catalog:",
     "dotenv": "catalog:",
     "zod": "catalog:"
