@@ -19,6 +19,8 @@
     }
   },
   "scripts": {
+    "user:create": "bun packages/auth/scripts/create-user.ts",
+    "user:update": "bun packages/auth/scripts/create-user.ts --update",
     "prepare": "husky",
     "dev": "bun run --filter '*' dev",
     "build": "bun run --filter '*' build",

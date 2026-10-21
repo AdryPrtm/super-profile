@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminAccessPage } from "@/page/admin/AdminAccessPage";
+import { redirect } from "next/navigation";
 import { hasAdminAccess } from "@/features/profile-content/auth/admin-access";
 import { deleteWatchEntry } from "@/features/watch/actions/watch-actions";
 import { WatchAdminForm } from "@/features/watch/components/admin/WatchAdminForm";
@@ -20,7 +20,7 @@ type WatchAdminPageProps = {
 };
 
 export default async function WatchAdminPage({ searchParams }: WatchAdminPageProps) {
-  if (!(await hasAdminAccess())) return <AdminAccessPage hasError={false} />;
+  if (!(await hasAdminAccess())) redirect("/login");
 
   const params = await searchParams;
   let entries: WatchEntry[] = [];

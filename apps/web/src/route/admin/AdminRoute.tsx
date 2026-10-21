@@ -1,6 +1,6 @@
 import { hasAdminAccess } from "@/features/profile-content/auth/admin-access";
 import { getProfileContent } from "@/features/profile-content/data/profile-content";
-import { AdminAccessPage } from "@/page/admin/AdminAccessPage";
+import { redirect } from "next/navigation";
 import { AdminProfilePage } from "@/page/admin/AdminProfilePage";
 
 type AdminRouteProps = {
@@ -12,11 +12,10 @@ type AdminRouteProps = {
 
 export async function AdminRoute({ searchParams }: AdminRouteProps) {
   const params = await searchParams;
-  const hasAccessError = params?.error === "access";
   const canEdit = await hasAdminAccess();
 
   if (!canEdit) {
-    return <AdminAccessPage hasError={hasAccessError} />;
+    redirect("/login");
   }
 
   const content = await getProfileContent();

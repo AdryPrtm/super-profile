@@ -1,28 +1,14 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { auth } from "@super-profile-dry/auth";
 
-import {
-  ADMIN_ACCESS_COOKIE,
-  getAdminAccessKey,
-} from "@/features/profile-content/auth/admin-access";
-import { getText } from "@/features/profile-content/utils/form-data";
-
-export async function signInAdmin(formData: FormData) {
-  const accessKey = getAdminAccessKey();
-  const submittedKey = getText(formData, "adminKey", "");
-
-  if (accessKey && submittedKey === accessKey) {
-    const cookieStore = await cookies();
-    cookieStore.set(ADMIN_ACCESS_COOKIE, accessKey, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/admin",
-    });
-    redirect("/admin");
-  }
-
-  redirect("/admin?error=access");
+export async function signOutAdmin() {
+  await auth.api.signOut({ headers: await headers() });
+  // Clear legacy access-key cookies during the transition to user sessions.
+  const cookieStore = await cookies();
+  cookieStore.set("profile_admin_access", "", { path: "/", maxAge: 0 });
+  cookieStore.set("profile_admin_access", "", { path: "/admin", maxAge: 0 });
+  redirect("/login");
 }
