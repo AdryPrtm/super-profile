@@ -21,6 +21,7 @@ First, install the dependencies:
 ```bash
 bun install
 ```
+
 ## Database Setup
 
 This project uses PostgreSQL with Prisma.
@@ -29,10 +30,10 @@ This project uses PostgreSQL with Prisma.
 2. Update your `apps/web/.env` file with your PostgreSQL connection details.
 
 3. Generate the Prisma client and push the schema:
+
 ```bash
 bun db:push
 ```
-
 
 Then, run the development server:
 
@@ -42,11 +43,29 @@ bun dev
 
 Open [http://localhost:3001](http://localhost:3001) in your browser to see your fullstack application.
 
+## Admin login
 
+Admin login uses Better Auth email/password accounts in PostgreSQL. Configure
+`DATABASE_URL`, `BETTER_AUTH_SECRET` (a random application secret, not a user
+password), and `BETTER_AUTH_URL` for the running site's URL. Use the same database
+on the hosted site. `ADMIN_CONTENT_KEY` is no longer used.
 
+From the project root, run `bun run user:create` in an interactive terminal.
+Enter a name, email, and a unique password of 12–128 characters. Password input
+is hidden and only its Better Auth hash is stored. The command never overwrites
+an existing account. Every account created this way can manage the site;
+public registration is disabled.
 
+Login accepts an email or a username (3–32 letters, digits, dots, underscores,
+or hyphens). Usernames use a reserved internal email address in the database.
+To change an existing account, run `bun run user:update`, enter its current
+email or username, then the new name, login, and password. Updating an account
+revokes all its existing sessions.
 
-
+Open `/login` and sign in with the account's email and password. Use `/admin`
+for profile content or `/admin/watch` for the watch journal. Sessions last up to
+eight hours and are validated against the database. **Log out** revokes the
+current session. Old access-key cookies cannot grant access.
 
 ## Project Structure
 

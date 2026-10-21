@@ -1,18 +1,8 @@
-import { cookies } from "next/headers";
-
-export const ADMIN_ACCESS_COOKIE = "profile_admin_access";
-
-export function getAdminAccessKey() {
-  return process.env.ADMIN_CONTENT_KEY?.trim() ?? "";
-}
+import { headers } from "next/headers";
+import { auth } from "@super-profile-dry/auth";
 
 export async function hasAdminAccess() {
-  const accessKey = getAdminAccessKey();
-
-  if (!accessKey) {
-    return process.env.NODE_ENV !== "production";
-  }
-
-  const cookieStore = await cookies();
-  return cookieStore.get(ADMIN_ACCESS_COOKIE)?.value === accessKey;
+  const session = await auth.api.getSession({ headers: await headers() });
+  // Accounts are provisioned by the site owner; public sign-up is disabled.
+  return Boolean(session?.user);
 }
