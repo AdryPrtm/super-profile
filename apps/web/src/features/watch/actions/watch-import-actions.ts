@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import prisma from "@super-profile-dry/db";
+import { saveImported } from "../data/save-watch-import";
+import { readLetterboxdExport } from "../utils/read-letterboxd-export";
 import { hasAdminAccess } from "@/features/profile-content/auth/admin-access";
 import { parseLetterboxdCsv, parseNetflixCsv, type ImportedWatch } from "../utils/parse-watch-imports";
 
@@ -18,25 +19,6 @@ type AniListEntry = {
     coverImage: { large: string | null } | null;
   } | null;
 };
-
-async function saveImported(entries: ImportedWatch[]) {
-  let count = 0;
-  for (let i = 0; i < entries.length; i += 10) {
-    const batch = entries.slice(i, i + 10);
-    await Promise.all(batch.map(async (entry) => {
-      const { externalId, posterUrl, ...data } = entry;
-      await prisma.watchEntry.upsert({
-        where: { externalId },
-        create: { externalId, posterUrl, ...data },
-        // CSV exports contain no poster URL. Preserve an existing TMDB or
-        // manually selected poster when the same watch history is re-imported.
-        update: { ...data, ...(posterUrl ? { posterUrl } : {}) },
-      });
-      count++;
-    }));
-  }
-  return count;
-}
 
 function finishImport(source: string, count: number) {
   revalidatePath("/watch");
@@ -63,7 +45,7 @@ export async function importNetflixCsv(formData: FormData) {
   try {
     const file = await readCsvFile(formData.get("file"));
     const dateOrder = formData.get("dateOrder") === "DMY" ? "DMY" : "MDY";
-    count = await saveImported(parseNetflixCsv(file.text, dateOrder));
+    count = (await saveImported(parseNetflixCsv(file.text, dateOrder))).count;
   } catch (error) { importError("Netflix", error); }
   finishImport("Netflix", count);
 }
@@ -73,12 +55,9 @@ export async function importLetterboxdCsv(formData: FormData) {
   let count: number;
   try {
     const values = formData.getAll("files");
-    if (!values.length || values.length > 3) throw new Error("Choose watched.csv, diary.csv, and/or ratings.csv.");
-    const files = await Promise.all(values.map(readCsvFile));
-    if (!files.every((file) => /(?:watched|diary|ratings)\.csv$/i.test(file.name))) {
-      throw new Error("Choose watched, diary, or ratings CSV files from your Letterboxd export.");
-    }
-    count = await saveImported(parseLetterboxdCsv(files));
+    if (!values.every((value): value is File => value instanceof File)) throw new Error("Choose a Letterboxd export.");
+    const files = await readLetterboxdExport(values);
+    count = (await saveImported(parseLetterboxdCsv(files))).count;
   } catch (error) { importError("Letterboxd", error); }
   finishImport("Letterboxd", count);
 }
@@ -122,9 +101,10 @@ export async function syncAniList(formData: FormData) {
         posterUrl: media.coverImage?.large ?? null,
         rating: item.score > 0 ? Math.min(10, Math.max(1, Math.round(item.score))) : null,
         watchedAt,
+        tracking: { externalIds: [`anilist:${media.id}`], title, aliases: Object.values(media.title).filter((value): value is string => Boolean(value)), status: item.status, rating: item.score || null, uri: `https://anilist.co/anime/${media.id}` },
       }];
     });
-    count = await saveImported(entries);
+    count = (await saveImported(entries)).count;
   } catch (error) { importError("AniList", error); }
   finishImport("AniList", count);
 }

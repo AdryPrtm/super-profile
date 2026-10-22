@@ -67,6 +67,37 @@ for profile content or `/admin/watch` for the watch journal. Sessions last up to
 eight hours and are validated against the database. **Log out** revokes the
 current session. Old access-key cookies cannot grant access.
 
+## Watch journal imports
+
+In `/admin/watch`, upload the original Letterboxd ZIP or its `watched.csv`,
+`watchlist.csv`, `ratings.csv`, `diary.csv`, `reviews.csv`, and `likes/films.csv`.
+Reviews are published under **History & reviews**. Diary dates, rewatches,
+tags, film likes, watchlist dates, and source links are retained. Profile,
+comments, likes of other people's reviews/lists, deleted, and orphaned files
+are excluded. CSV import is additive: omitted history is not deleted.
+
+Films are matched by normalized title and release year. AniList title aliases
+are also used on subsequent syncs. Different years and ambiguous matches stay
+separate. Matching titles share one database row, with provider identities and
+ratings preserved in `tracking`. Overall status priority is Watched, Watching,
+Paused, Dropped, then Plan to watch; per-source status remains visible in details.
+Letterboxd rating takes display priority, then AniList. Existing posters are kept.
+
+For an existing database, apply `packages/db/prisma/sql/add-watch-tracking.sql`
+and regenerate Prisma before starting the updated app. The public page and hero
+count unique titles, not viewing events or source records.
+
+To inspect an export from the repository root without writing to the database:
+
+```bash
+bun run --env-file=apps/web/.env apps/web/scripts/import-letterboxd.ts path/to/export.zip
+```
+
+Add `--apply` to import it. The import transaction also consolidates existing
+duplicates and keeps source-specific viewing history. Repeating an identical
+import does not create new records. New watchlist posters can be filled with
+the existing TMDB poster tool after import.
+
 ## Project Structure
 
 ```

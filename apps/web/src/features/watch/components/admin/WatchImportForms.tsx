@@ -19,7 +19,7 @@ export function WatchImportForms() {
         <form action={syncAniList} className="flex flex-col rounded-xl border border-border p-5">
           <h3 className="font-semibold">AniList</h3>
           <p className="mt-2 flex-1 text-sm text-muted-foreground">Fetch a public anime list by username, including watch status and ratings.</p>
-          <label className="mt-5 block text-sm font-medium">Username AniList
+          <label className="mt-5 block text-sm font-medium">AniList username
             <input name="username" required minLength={2} maxLength={30} autoComplete="off" placeholder="username" className={fieldClass} />
           </label>
           <div className="mt-4"><ImportButton label="Sync AniList" /></div>
@@ -27,7 +27,7 @@ export function WatchImportForms() {
         <form action={importNetflixCsv} className="flex flex-col rounded-xl border border-border p-5">
           <h3 className="font-semibold">Netflix</h3>
           <p className="mt-2 flex-1 text-sm text-muted-foreground">In Netflix, go to Account → Profiles → Viewing activity → Download all, then upload the CSV file.</p>
-          <label className="mt-5 block text-sm font-medium">CSV Netflix
+          <label className="mt-5 block text-sm font-medium">Netflix CSV
             <input name="file" type="file" accept=".csv,text/csv" required className={fieldClass} />
           </label>
           <label className="mt-4 block text-sm font-medium">Date format in the CSV
@@ -40,10 +40,11 @@ export function WatchImportForms() {
         </form>
         <form action={importLetterboxdCsv} className="flex flex-col rounded-xl border border-border p-5">
           <h3 className="font-semibold">Letterboxd</h3>
-          <p className="mt-2 flex-1 text-sm text-muted-foreground">Download your Letterboxd export, open the ZIP file, and select watched.csv. Add diary.csv and ratings.csv to include watch dates and ratings.</p>
-          <label className="mt-5 block text-sm font-medium">Letterboxd export CSV files
-            <input name="files" type="file" accept=".csv,text/csv" multiple required className={fieldClass} />
+          <p className="mt-2 flex-1 text-sm text-muted-foreground">Upload your full export ZIP, or select watched, watchlist, ratings, diary, reviews, and likes/films CSV files. Includes reviews, rewatches, tags, and watch dates. Matching titles and release years are combined across sources.</p>
+          <label className="mt-5 block text-sm font-medium">Letterboxd export ZIP or CSV files
+            <input name="files" type="file" accept=".zip,.csv,application/zip,text/csv" multiple required className={fieldClass} />
           </label>
+          <p className="mt-2 text-xs text-muted-foreground">15 MB total. Imported reviews are public. Profile, social activity, and deleted/orphaned records are excluded.</p>
           <div className="mt-4"><ImportButton label="Import Letterboxd" /></div>
         </form>
       </div>

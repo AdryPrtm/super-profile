@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import type { WatchCategory, WatchStatus } from "../data/watch-data";
+import { mergeSource, type SourceTracking } from "./watch-tracking";
 
 export type ImportedWatch = {
   externalId: string;
@@ -11,6 +12,7 @@ export type ImportedWatch = {
   posterUrl: string | null;
   rating: number | null;
   watchedAt: Date | null;
+  tracking?: SourceTracking;
 };
 
 type CsvRow = Record<string, string>;
@@ -104,28 +106,50 @@ export function parseNetflixCsv(text: string, dateOrder: "MDY" | "DMY"): Importe
 
 export function parseLetterboxdCsv(files: Array<{ name: string; text: string }>): ImportedWatch[] {
   const entries = new Map<string, ImportedWatch>();
-  const ordered = files.sort((a, b) => {
-    const priority = (name: string) => /watched\.csv$/i.test(name) ? 0 : /ratings\.csv$/i.test(name) ? 1 : 2;
-    return priority(a.name) - priority(b.name);
-  });
+  const priority = ["watchlist.csv", "watched.csv", "diary.csv", "reviews.csv", "ratings.csv", "films.csv", "likes/films.csv"];
+  const ordered = [...files].sort((a, b) => priority.indexOf(a.name.toLowerCase()) - priority.indexOf(b.name.toLowerCase()));
   for (const file of ordered) {
+    const name = file.name.toLowerCase();
+    if (!priority.includes(name)) continue;
     for (const row of parseCsv(file.text)) {
       const title = csvValue(row, "Name", "Title").slice(0, 200);
       if (!title) continue;
       const yearValue = Number(csvValue(row, "Year"));
       const year = Number.isInteger(yearValue) && yearValue >= 1888 && yearValue <= 2100 ? yearValue : null;
       const uri = csvValue(row, "Letterboxd URI");
-      const key = stableId("letterboxd", uri || titleKey(title, year));
+      // Diary/review URLs identify a viewing, not a film. Match the film itself.
+      const key = stableId("letterboxd", titleKey(title, year));
       const previous = entries.get(key);
+      // A like alone does not tell us whether a film was watched or planned.
+      if (name.endsWith("films.csv") && !previous) continue;
       // Watched/ratings Date is the date the activity was recorded; only diary
       // provides the actual viewing date.
-      const diaryDate = /diary\.csv$/i.test(file.name) ? csvValue(row, "Watched Date", "WatchedDate", "Date") : "";
+      const isEvent = name === "diary.csv" || name === "reviews.csv";
+      const diaryDate = isEvent ? csvValue(row, "Watched Date", "WatchedDate") : "";
       const watchedAt = parseDate(diaryDate);
       if (diaryDate && !watchedAt) throw new Error(`Unrecognized Letterboxd diary date: ${diaryDate.slice(0, 40)}.`);
       const rawRating = Number(csvValue(row, "Rating"));
       const rating = rawRating > 0 && rawRating <= 5 ? Math.round(rawRating * 2) : null;
+      const activityAt = parseDate(csvValue(row, "Date"))?.toISOString() ?? null;
+      const completed = name === "watched.csv" || name === "ratings.csv" || isEvent;
+      const status = completed || previous?.status === "completed" ? "completed" : "planned";
+      const tracking = mergeSource(previous?.tracking, {
+        externalIds: [key, ...(uri ? [stableId("letterboxd", uri)] : [])],
+        title, status, rating: rating ?? previous?.rating ?? null,
+        ...(!isEvent && uri ? { uri } : {}),
+        ...(name === "watched.csv" ? { addedAt: activityAt } : {}),
+        ...(name === "watchlist.csv" ? { watchlistedAt: activityAt } : {}),
+        ...(name === "ratings.csv" ? { ratedAt: activityAt } : {}),
+        ...(name.endsWith("films.csv") ? { likedAt: activityAt } : {}),
+        ...(isEvent ? { events: [{
+          uri, loggedAt: activityAt, watchedAt: watchedAt?.toISOString() ?? null, rating,
+          rewatch: /^(yes|true|1)$/i.test(csvValue(row, "Rewatch")),
+          tags: csvValue(row, "Tags").split(",").map((tag) => tag.trim()).filter(Boolean),
+          ...(name === "reviews.csv" ? { review: csvValue(row, "Review") } : {}),
+        }] } : {}),
+      });
       entries.set(key, {
-        externalId: key, source: "letterboxd", title, category: "film", status: "completed", year,
+        externalId: key, source: "letterboxd", title, category: "film", status, year, tracking,
         posterUrl: null, rating: rating ?? previous?.rating ?? null,
         watchedAt: watchedAt && (!previous?.watchedAt || watchedAt > previous.watchedAt) ? watchedAt : previous?.watchedAt ?? null,
       });
