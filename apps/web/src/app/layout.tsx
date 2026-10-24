@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@/index.css";
 import Providers from "@/components/providers";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { getProfileContent } from "@/features/profile-content/data/profile-content";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,11 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Your Name — Software Engineer",
-  description:
-    "Personal portfolio of a software engineer crafting elegant digital experiences.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { metadata } = await getProfileContent();
+  return { title: metadata.homeTitle, description: metadata.homeDescription };
+}
 
 export default function RootLayout({
   children,
@@ -31,7 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <div className="grid min-h-svh grid-rows-[auto_1fr]">
+          <div className="grid min-h-svh grid-cols-[minmax(0,1fr)] grid-rows-[auto_1fr]">
             <SiteHeader />
             {children}
           </div>

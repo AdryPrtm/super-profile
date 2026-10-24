@@ -9,6 +9,7 @@ type ProfileTextareaFieldProps = {
   defaultValue: string;
   placeholder?: string;
   rows?: number;
+  maxLength?: number;
 };
 
 export function ProfileTextareaField({
@@ -17,6 +18,7 @@ export function ProfileTextareaField({
   defaultValue,
   placeholder,
   rows = 5,
+  maxLength,
 }: ProfileTextareaFieldProps) {
   return (
     <div className="space-y-2">
@@ -25,6 +27,7 @@ export function ProfileTextareaField({
         id={name}
         name={name}
         rows={rows}
+        maxLength={maxLength}
         className={textareaClass}
         defaultValue={defaultValue}
         placeholder={placeholder}

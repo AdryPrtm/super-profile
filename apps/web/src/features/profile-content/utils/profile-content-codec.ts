@@ -144,11 +144,21 @@ function parseSocials(formData: FormData): SocialLink[] {
 export function buildProfileContentFromFormData(formData: FormData) {
   const fallback = DEFAULT_PROFILE_CONTENT;
   const aboutParagraphs = splitLines(getText(formData, "aboutParagraphs", ""));
+  const firstName = getText(formData, "heroFirstName", fallback.hero.firstName);
+  const lastName = getText(formData, "heroLastName", fallback.hero.lastName);
 
   return {
+    metadata: {
+      homeTitle: getText(formData, "metadataHomeTitle", fallback.metadata.homeTitle).slice(0, 100),
+      homeDescription: getText(formData, "metadataHomeDescription", fallback.metadata.homeDescription).slice(0, 300),
+      watchTitle: getText(formData, "metadataWatchTitle", fallback.metadata.watchTitle).slice(0, 100),
+      watchDescription: getText(formData, "metadataWatchDescription", fallback.metadata.watchDescription).slice(0, 300),
+    },
     hero: {
-      initials: getText(formData, "heroInitials", fallback.hero.initials),
-      name: getText(formData, "heroName", fallback.hero.name),
+      imageUrl: getText(formData, "heroImageUrl", fallback.hero.imageUrl),
+      name: [firstName, lastName].filter(Boolean).join(" "),
+      firstName,
+      lastName,
       headline: getText(formData, "heroHeadline", fallback.hero.headline),
       summary: getText(formData, "heroSummary", fallback.hero.summary),
       primaryCtaLabel: getText(

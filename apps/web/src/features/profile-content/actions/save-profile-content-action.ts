@@ -22,6 +22,7 @@ export async function saveAdminProfileContent(formData: FormData) {
   }
 
   revalidatePath("/");
+  revalidatePath("/watch");
   revalidatePath("/admin");
   redirect("/admin?saved=1");
 }

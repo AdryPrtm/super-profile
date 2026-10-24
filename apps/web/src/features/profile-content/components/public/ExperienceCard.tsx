@@ -22,10 +22,11 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
     .join(" · ");
 
   return (
-    <li className="grid gap-4 border-b border-[var(--portfolio-border)] py-7 sm:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)] sm:gap-10 sm:py-9">
-      <div className="flex items-start gap-3">
-        <span className="portfolio-label text-[var(--portfolio-accent)]">{String(index + 1).padStart(2, "0")}</span>
-        {period ? <span className="text-sm text-[var(--portfolio-muted)]">{period}</span> : null}
+    <li className="relative grid gap-4 border-b border-[var(--portfolio-border)] py-8 pl-8 last:border-b-0 sm:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)] sm:gap-10 sm:py-10 sm:pl-12">
+      <span aria-hidden="true" className={`absolute -left-[9px] top-9 h-4 w-4 rounded-full border-[3px] border-[var(--portfolio-accent)] bg-[var(--portfolio-surface)] ring-4 ring-[var(--portfolio-surface)] sm:top-11 ${experience.isCurrent ? "bg-[var(--portfolio-accent)] shadow-[0_0_0_5px_color-mix(in_srgb,var(--portfolio-accent)_25%,transparent)]" : ""}`} />
+      <div className="flex flex-wrap items-start gap-x-3 gap-y-2">
+        {period ? <span className="text-sm font-medium text-[var(--portfolio-muted)]">{period}</span> : null}
+        {experience.isCurrent ? <span className="portfolio-label rounded-full border border-[var(--portfolio-accent)] px-2 py-1 text-[var(--portfolio-accent)]">Now</span> : null}
       </div>
       <div>
         <div className="flex items-start justify-between gap-4">

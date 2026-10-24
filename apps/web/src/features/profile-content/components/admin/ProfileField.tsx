@@ -7,6 +7,7 @@ type ProfileFieldProps = {
   defaultValue: string;
   placeholder?: string;
   type?: string;
+  maxLength?: number;
 };
 
 export function ProfileField({
@@ -15,6 +16,7 @@ export function ProfileField({
   defaultValue,
   placeholder,
   type = "text",
+  maxLength,
 }: ProfileFieldProps) {
   return (
     <div className="space-y-2">
@@ -23,6 +25,7 @@ export function ProfileField({
         id={name}
         name={name}
         type={type}
+        maxLength={maxLength}
         defaultValue={defaultValue}
         placeholder={placeholder}
       />
