@@ -37,9 +37,17 @@ export type Experience = {
 };
 
 export type ProfileContent = {
+  metadata: {
+    homeTitle: string;
+    homeDescription: string;
+    watchTitle: string;
+    watchDescription: string;
+  };
   hero: {
-    initials: string;
+    imageUrl: string;
     name: string;
+    firstName: string;
+    lastName: string;
     headline: string;
     summary: string;
     primaryCtaLabel: string;
@@ -67,9 +75,17 @@ export type ProfileContent = {
 };
 
 export const DEFAULT_PROFILE_CONTENT: ProfileContent = {
+  metadata: {
+    homeTitle: "Your Name — Software Engineer",
+    homeDescription: "Personal portfolio of a software engineer crafting elegant digital experiences.",
+    watchTitle: "Watch Journal | super.profile",
+    watchDescription: "Films, series, and anime I have watched.",
+  },
   hero: {
-    initials: "AP",
+    imageUrl: "",
     name: "Your Name",
+    firstName: "Your",
+    lastName: "Name",
     headline: "Software Engineer & Creative Developer",
     summary:
       "Crafting elegant digital experiences with clean code and thoughtful design. Passionate about building products that make a difference.",
@@ -218,6 +234,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function readString(value: unknown, fallback: string) {
   return typeof value === "string" ? value : fallback;
+}
+
+function splitLegacyProfileName(name: string) {
+  const parts = name.trim().split(/\s+/);
+
+  return {
+    firstName: parts.slice(0, -1).join(" ") || parts[0] || "",
+    lastName: parts.length > 1 ? parts[parts.length - 1] : "",
+  };
 }
 
 function readParagraphs(value: unknown, fallback: string[]) {
@@ -418,18 +443,29 @@ function readSocials(value: unknown, legacy: unknown, fallback: SocialLink[]) {
 
 export function normalizeProfileContent(value: unknown): ProfileContent {
   const source = isRecord(value) ? value : {};
+  const metadata = isRecord(source.metadata) ? source.metadata : {};
   const hero = isRecord(source.hero) ? source.hero : {};
   const about = isRecord(source.about) ? source.about : {};
   const contact = isRecord(source.contact) ? source.contact : {};
   const footer = isRecord(source.footer) ? source.footer : {};
+  const legacyName = readString(hero.name, DEFAULT_PROFILE_CONTENT.hero.name);
+  const legacyParts = splitLegacyProfileName(legacyName);
+  const firstName = readString(hero.firstName, legacyParts.firstName).trim();
+  const lastName = readString(hero.lastName, legacyParts.lastName).trim();
+  const name = [firstName, lastName].filter(Boolean).join(" ") || legacyName;
 
   return {
+    metadata: {
+      homeTitle: readString(metadata.homeTitle, `${name} — ${readString(hero.headline, DEFAULT_PROFILE_CONTENT.hero.headline)}`),
+      homeDescription: readString(metadata.homeDescription, readString(hero.summary, DEFAULT_PROFILE_CONTENT.hero.summary).slice(0, 300)),
+      watchTitle: readString(metadata.watchTitle, DEFAULT_PROFILE_CONTENT.metadata.watchTitle),
+      watchDescription: readString(metadata.watchDescription, DEFAULT_PROFILE_CONTENT.metadata.watchDescription),
+    },
     hero: {
-      initials: readString(
-        hero.initials,
-        DEFAULT_PROFILE_CONTENT.hero.initials,
-      ),
-      name: readString(hero.name, DEFAULT_PROFILE_CONTENT.hero.name),
+      imageUrl: readString(hero.imageUrl, DEFAULT_PROFILE_CONTENT.hero.imageUrl),
+      name,
+      firstName,
+      lastName,
       headline: readString(
         hero.headline,
         DEFAULT_PROFILE_CONTENT.hero.headline,

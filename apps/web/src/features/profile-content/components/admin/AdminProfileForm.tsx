@@ -5,6 +5,7 @@ import { saveAdminProfileContent } from "@/features/profile-content/actions/save
 import { AdminFormSection } from "@/features/profile-content/components/admin/AdminFormSection";
 import { ExperiencesEditor } from "@/features/profile-content/components/admin/ExperiencesEditor";
 import { ProfileField } from "@/features/profile-content/components/admin/ProfileField";
+import { HeroImageField } from "@/features/profile-content/components/admin/HeroImageField";
 import { ProfileTextareaField } from "@/features/profile-content/components/admin/ProfileTextareaField";
 import { SkillsAndProjectsEditor } from "@/features/profile-content/components/admin/SkillsAndProjectsEditor";
 import { SocialsEditor } from "@/features/profile-content/components/admin/SocialsEditor";
@@ -17,17 +18,29 @@ type AdminProfileFormProps = {
 export function AdminProfileForm({ content }: AdminProfileFormProps) {
   return (
     <form action={saveAdminProfileContent} className="space-y-6">
+      <AdminFormSection title="Webpage metadata">
+        <p className="text-sm text-muted-foreground">These titles appear in browser tabs and search results. Descriptions are used by search engines and link previews.</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <ProfileField label="Homepage title" name="metadataHomeTitle" defaultValue={content.metadata.homeTitle} maxLength={100} />
+          <ProfileField label="Watch Journal title" name="metadataWatchTitle" defaultValue={content.metadata.watchTitle} maxLength={100} />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <ProfileTextareaField label="Homepage description" name="metadataHomeDescription" defaultValue={content.metadata.homeDescription} rows={3} maxLength={300} />
+          <ProfileTextareaField label="Watch Journal description" name="metadataWatchDescription" defaultValue={content.metadata.watchDescription} rows={3} maxLength={300} />
+        </div>
+      </AdminFormSection>
       <AdminFormSection title="Hero">
+        <HeroImageField imageUrl={content.hero.imageUrl} />
         <div className="grid gap-4 sm:grid-cols-2">
           <ProfileField
-            label="Initials"
-            name="heroInitials"
-            defaultValue={content.hero.initials}
+            label="First name"
+            name="heroFirstName"
+            defaultValue={content.hero.firstName}
           />
           <ProfileField
-            label="Name"
-            name="heroName"
-            defaultValue={content.hero.name}
+            label="Last name"
+            name="heroLastName"
+            defaultValue={content.hero.lastName}
           />
         </div>
         <ProfileField

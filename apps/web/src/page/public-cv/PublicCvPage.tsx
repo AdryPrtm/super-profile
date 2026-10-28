@@ -5,6 +5,7 @@ import { HeroSection } from '@/features/profile-content/components/public/HeroSe
 import { ProfileFooter } from '@/features/profile-content/components/public/ProfileFooter';
 import { ProjectsSection } from '@/features/profile-content/components/public/ProjectsSection';
 import { SkillsSection } from '@/features/profile-content/components/public/SkillsSection';
+import { WatchBreakoutSection } from '@/features/profile-content/components/public/WatchBreakoutSection';
 import type { ProfileContent } from '@/features/profile-content/data/profile-content';
 
 type PublicCvPageProps = {
@@ -19,6 +20,7 @@ export function PublicCvPage({ content }: PublicCvPageProps) {
       <SkillsSection skills={content.skills} />
       <ProjectsSection projects={content.projects} />
       <ExperienceSection experiences={content.experiences} />
+      <WatchBreakoutSection />
       <ContactSection contact={content.contact} />
       <ProfileFooter footer={content.footer} socials={content.socials} />
     </main>

@@ -1,4 +1,5 @@
 import prisma from "@super-profile-dry/db";
+import type { WatchTracking } from "../utils/watch-tracking";
 
 export type WatchCategory = "film" | "series" | "anime";
 export type WatchStatus = "completed" | "watching" | "planned" | "paused" | "dropped";
@@ -10,6 +11,7 @@ export type WatchEntry = {
   category: WatchCategory;
   status: WatchStatus;
   source: WatchSource;
+  tracking: WatchTracking;
   year: number | null;
   posterUrl: string | null;
   rating: number | null;
@@ -19,7 +21,7 @@ export type WatchEntry = {
 
 export async function getWatchEntries(): Promise<WatchEntry[]> {
   const entries = await prisma.watchEntry.findMany({
-    orderBy: [{ watchedAt: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ watchedAt: { sort: "desc", nulls: "last" } }, { createdAt: "desc" }],
   });
 
   return entries.map((entry) => ({
@@ -28,6 +30,7 @@ export async function getWatchEntries(): Promise<WatchEntry[]> {
     category: entry.category as WatchCategory,
     status: entry.status as WatchStatus,
     source: entry.source as WatchSource,
+    tracking: entry.tracking as WatchTracking,
     year: entry.year,
     posterUrl: entry.posterUrl,
     rating: entry.rating,

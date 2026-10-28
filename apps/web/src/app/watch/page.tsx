@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import { WatchCatalog } from '@/features/watch/components/public/WatchCatalog';
 import { getWatchEntries } from '@/features/watch/data/watch-data';
+import { getProfileContent } from '@/features/profile-content/data/profile-content';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Watch Journal | super.profile',
-  description: 'Films, series, and anime I have watched.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { metadata } = await getProfileContent();
+  return { title: metadata.watchTitle, description: metadata.watchDescription };
+}
 
 export default async function WatchPage() {
   try {

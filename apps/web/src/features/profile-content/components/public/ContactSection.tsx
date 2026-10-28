@@ -12,7 +12,7 @@ export function ContactSection({ contact }: ContactSectionProps) {
     <section id="contact" className="portfolio-section px-5 py-16 sm:px-8 sm:py-24">
       <div className="mx-auto max-w-6xl bg-[#1d4ed8] px-6 py-12 text-white sm:px-12 sm:py-16">
         <div className="flex flex-wrap items-start justify-between gap-5">
-          <p className="portfolio-label text-blue-100">06 / {contact.eyebrow}</p>
+          <p className="portfolio-label text-blue-100">07 / {contact.eyebrow}</p>
           <ArrowUpRight aria-hidden="true" className="h-7 w-7" />
         </div>
         <h2 className="mt-14 max-w-4xl text-[clamp(3rem,7vw,6.5rem)] font-bold leading-[0.98] tracking-[-0.075em]">{contact.title}</h2>

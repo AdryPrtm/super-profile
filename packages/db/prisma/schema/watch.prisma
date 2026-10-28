@@ -9,6 +9,7 @@ model WatchEntry {
   posterUrl String?
   rating    Int?
   notes     String?
+  tracking  Json      @default("{}")
   watchedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

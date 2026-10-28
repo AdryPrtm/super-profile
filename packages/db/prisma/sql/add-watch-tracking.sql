@@ -1,0 +1,1 @@
+ALTER TABLE public.watch_entries ADD COLUMN IF NOT EXISTS tracking JSONB NOT NULL DEFAULT '{}';

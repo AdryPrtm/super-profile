@@ -5,7 +5,6 @@ import { Menu, X } from 'lucide-react';
 import { ModeToggle } from '@/components/mode-toggle';
 
 const NAV_LINKS = [
-  { href: "/watch", label: "Watch" },
   { href: '/#about', label: 'About' },
   { href: '/#skills', label: 'Skills' },
   { href: '/#projects', label: 'Projects' },
@@ -24,10 +23,10 @@ export function SiteHeader() {
       >
         Skip to content
       </a>
-      <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
+      <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-5 max-[360px]:gap-2 max-[360px]:px-3 sm:px-8">
         <a
           href="/#hero"
-          className="inline-flex min-h-11 items-center gap-2.5 text-sm font-bold tracking-tight transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="inline-flex min-h-11 items-center gap-2.5 text-sm font-bold tracking-tight transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary max-[360px]:gap-1.5 max-[360px]:text-xs"
         >
           <span aria-hidden="true" className="h-3 w-3 bg-blue-600" />
           SUPER<span className="font-normal text-muted-foreground">/</span>
