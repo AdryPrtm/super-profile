@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { uploadProjectImage } from "@/features/profile-content/actions/upload-project-image-action";
-import { textareaClass } from "@/features/profile-content/components/admin/ProfileTextareaField";
+import { RichTextEditor } from "@/features/profile-content/components/admin/RichTextEditor";
 import type { Project } from "@/features/profile-content/data/profile-content";
 import { cn } from "@/lib/utils";
 
@@ -108,16 +108,12 @@ function ProjectRowCard({
 
       <div className="space-y-2">
         <Label htmlFor={`${row.key}-description`}>Description</Label>
-        <textarea
+        <input type="hidden" name="projectDescription" value={row.description} />
+        <RichTextEditor
           id={`${row.key}-description`}
-          name="projectDescription"
-          rows={3}
-          className={textareaClass}
           value={row.description}
           placeholder="Summarize what you built and its impact."
-          onChange={(event) =>
-            onUpdate(row.key, { description: event.target.value })
-          }
+          onChange={(value) => onUpdate(row.key, { description: value })}
         />
       </div>
 

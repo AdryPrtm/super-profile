@@ -7,6 +7,7 @@ type AdminRouteProps = {
   searchParams?: Promise<{
     saved?: string;
     error?: string;
+    attempt?: string;
   }>;
 };
 
@@ -24,7 +25,8 @@ export async function AdminRoute({ searchParams }: AdminRouteProps) {
     <AdminProfilePage
       content={content}
       hasDatabaseError={params?.error === "database"}
-      saved={params?.saved === "1"}
+      saveToken={params?.saved ?? null}
+      errorToken={params?.error === "database" ? params.attempt ?? "database" : null}
     />
   );
 }

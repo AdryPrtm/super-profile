@@ -17,12 +17,14 @@ export function HeroSection({ hero }: HeroSectionProps) {
           </span>
         </div>
         <div
+          data-hero-stage
           className="relative isolate overflow-hidden px-5 pb-8 pt-8 sm:px-10 lg:min-h-[740px] lg:pb-12 lg:pt-10"
           style={{
             background:
               'radial-gradient(ellipse at 50% 45%, var(--portfolio-surface), var(--portfolio-background) 78%)',
           }}
         >
+          <div aria-hidden="true" className="hero-orbit" />
           <div className="relative z-20 flex items-start justify-between gap-4">
             <p className="portfolio-label text-[var(--portfolio-accent)]">
               01 / Introduction
@@ -43,12 +45,12 @@ export function HeroSection({ hero }: HeroSectionProps) {
             aria-label={hero.name}
           >
             <span className="inline-flex max-w-full flex-col items-center text-center">
-              <span>{hero.firstName}</span>
-              {hero.lastName && <span>{hero.lastName}</span>}
+              <span className="hero-name-line">{hero.firstName}</span>
+              {hero.lastName && <span className="hero-name-line">{hero.lastName}</span>}
             </span>
           </h1>
 
-          <div className="pointer-events-none relative z-10 mx-auto -mt-4 flex h-[390px] max-w-[520px] items-end justify-center sm:h-[470px] lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:h-[660px] lg:max-w-[780px]">
+          <div className="hero-portrait pointer-events-none relative z-10 mx-auto -mt-4 flex h-[390px] max-w-[520px] items-end justify-center sm:h-[470px] lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:h-[660px] lg:max-w-[780px]">
             {hero.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -73,7 +75,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
             )}
           </div>
 
-          <div className="relative z-20 mt-2 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between lg:absolute lg:inset-x-10 lg:bottom-12 lg:mt-0">
+          <div className="hero-intro relative z-20 mt-2 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between lg:absolute lg:inset-x-10 lg:bottom-12 lg:mt-0">
             <div className="max-w-xs">
               <p className="mb-6 text-xl font-medium leading-snug tracking-tight sm:text-2xl">
                 {hero.headline}

@@ -1,0 +1,169 @@
+.portfolio-motion {
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.portfolio-motion [data-hero-stage]::before,
+.portfolio-motion [data-hero-stage]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.portfolio-motion [data-hero-stage]::before {
+  background: radial-gradient(ellipse 470px 400px at var(--spot-x, 50%) var(--spot-y, 42%), color-mix(in srgb, var(--portfolio-accent) 14%, transparent), transparent 75%);
+}
+
+.portfolio-motion [data-hero-stage]::after {
+  background-image: linear-gradient(var(--portfolio-border) 1px, transparent 1px), linear-gradient(90deg, var(--portfolio-border) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.2;
+  mask-image: radial-gradient(ellipse at 50% 45%, black, transparent 70%);
+}
+
+.portfolio-motion .hero-orbit {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  width: min(75%, 650px);
+  aspect-ratio: 1;
+  left: 50%;
+  top: 44%;
+  translate: -50% -50%;
+  border: 1px solid color-mix(in srgb, var(--portfolio-accent) 20%, transparent);
+  border-radius: 50%;
+}
+
+.portfolio-motion .hero-orbit::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border: 1px dashed color-mix(in srgb, var(--portfolio-accent) 16%, transparent);
+  border-radius: inherit;
+}
+
+.portfolio-motion .hero-name-line { display: block; }
+
+.portfolio-motion .experience-item {
+  isolation: isolate;
+  background: transparent;
+}
+
+.portfolio-motion .experience-item::before {
+  content: '';
+  position: absolute;
+  inset: 8px 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--portfolio-accent) 6%, var(--portfolio-background));
+  opacity: 0;
+  transform: scale(0.985);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.portfolio-motion .experience-node {
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--portfolio-accent) 25%, transparent);
+}
+
+.portfolio-motion .experience-node-current {
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+}
+
+.portfolio-motion .experience-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.portfolio-motion .experience-detail.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+}
+
+.portfolio-motion .experience-detail-inner { min-height: 0; overflow: hidden; }
+.portfolio-motion .experience-toggle-mark { font-size: 1.2rem; font-weight: 400; line-height: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .portfolio-motion .hero-name-line {
+    animation: portfolio-title-in 1.1s var(--motion-ease) both;
+  }
+  .portfolio-motion .hero-name-line + .hero-name-line { animation-delay: 140ms; }
+  .portfolio-motion .hero-portrait { animation: portfolio-arrive 1.2s 180ms var(--motion-ease) both; }
+  .portfolio-motion .hero-intro { animation: portfolio-arrive 900ms 320ms var(--motion-ease) both; }
+  .portfolio-motion .hero-orbit { animation: portfolio-orbit-in 1.8s var(--motion-ease) both; }
+
+  .portfolio-motion [data-reveal] {
+    transition: opacity 800ms var(--motion-ease) var(--reveal-delay, 0ms), translate 800ms var(--motion-ease) var(--reveal-delay, 0ms);
+  }
+  .portfolio-motion [data-reveal='pending'] { opacity: 0; translate: 0 26px; }
+  .portfolio-motion [data-reveal='visible'],
+  .portfolio-motion [data-reveal]:focus-within { opacity: 1; translate: 0 0; }
+
+  .portfolio-motion .experience-item::before,
+  .portfolio-motion .experience-node,
+  .portfolio-motion .experience-arrow,
+  .portfolio-motion .experience-toggle-mark,
+  .portfolio-motion .experience-detail {
+    transition: transform 550ms var(--motion-ease), opacity 400ms ease, box-shadow 550ms ease, grid-template-rows 550ms var(--motion-ease), visibility 550ms;
+  }
+
+  .portfolio-motion .experience-detail.is-open { transition: grid-template-rows 550ms var(--motion-ease), opacity 400ms ease, visibility 0ms; }
+  .portfolio-motion .experience-toggle-mark.is-open { transform: rotate(45deg); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .portfolio-motion .experience-item:hover::before,
+    .portfolio-motion .experience-item:focus-within::before { opacity: 1; transform: scale(1); }
+    .portfolio-motion .experience-item:hover .experience-node,
+    .portfolio-motion .experience-item:focus-within .experience-node { transform: scale(1.22); box-shadow: 0 0 0 7px color-mix(in srgb, var(--portfolio-accent) 14%, transparent); }
+    .portfolio-motion .experience-item:hover .experience-arrow,
+    .portfolio-motion .experience-item:focus-within .experience-arrow { transform: translate(3px, -3px); }
+  }
+
+  .portfolio-motion .portfolio-button,
+  .portfolio-motion #projects button.group,
+  .portfolio-motion #skills .grid > * {
+    transition: transform 350ms var(--motion-ease), box-shadow 350ms ease, border-color 250ms ease, background-color 250ms ease, opacity 800ms var(--motion-ease), translate 800ms var(--motion-ease);
+  }
+  .portfolio-motion .portfolio-button svg,
+  .portfolio-motion #projects button.group svg { transition: transform 350ms var(--motion-ease); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .portfolio-motion .portfolio-button:hover { transform: translateY(-3px); }
+    .portfolio-motion .portfolio-button:hover svg,
+    .portfolio-motion #projects button.group:hover svg { transform: translate(3px, -3px); }
+    .portfolio-motion #projects button.group:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 40px -25px color-mix(in srgb, var(--portfolio-accent) 45%, transparent);
+    }
+    .portfolio-motion #skills .grid > *:hover {
+      background-color: var(--portfolio-surface);
+      box-shadow: inset 0 3px var(--portfolio-accent);
+    }
+  }
+}
+
+@keyframes portfolio-title-in {
+  from { opacity: 0; transform: translateY(32px); filter: blur(5px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes portfolio-arrive {
+  from { opacity: 0; translate: 0 20px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes portfolio-orbit-in {
+  from { opacity: 0; transform: scale(0.88) rotate(-16deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-motion [data-reveal] { opacity: 1; translate: none; }
+}
+
+@media print {
+  .portfolio-motion [data-reveal] { opacity: 1; translate: none; }
+  .portfolio-motion *, .portfolio-motion *::before, .portfolio-motion *::after { animation: none !important; }
+  .portfolio-motion .hero-orbit { display: none; }
+}
