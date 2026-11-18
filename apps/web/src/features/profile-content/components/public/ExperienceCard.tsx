@@ -22,8 +22,8 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
     .join(" · ");
 
   return (
-    <li className="relative grid gap-4 border-b border-[var(--portfolio-border)] py-8 pl-8 last:border-b-0 sm:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)] sm:gap-10 sm:py-10 sm:pl-12">
-      <span aria-hidden="true" className={`absolute -left-[9px] top-9 h-4 w-4 rounded-full border-[3px] border-[var(--portfolio-accent)] bg-[var(--portfolio-surface)] ring-4 ring-[var(--portfolio-surface)] sm:top-11 ${experience.isCurrent ? "bg-[var(--portfolio-accent)] shadow-[0_0_0_5px_color-mix(in_srgb,var(--portfolio-accent)_25%,transparent)]" : ""}`} />
+    <li className="experience-item relative grid gap-4 border-b border-[var(--portfolio-border)] px-4 py-8 pl-8 last:border-b-0 sm:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)] sm:gap-10 sm:py-10 sm:pl-12">
+      <span aria-hidden="true" className={`experience-node absolute -left-[9px] top-9 h-4 w-4 rounded-full border-[3px] border-[var(--portfolio-accent)] bg-[var(--portfolio-surface)] ring-4 ring-[var(--portfolio-surface)] sm:top-11 ${experience.isCurrent ? "experience-node-current bg-[var(--portfolio-accent)]" : ""}`} />
       <div className="flex flex-wrap items-start gap-x-3 gap-y-2">
         {period ? <span className="text-sm font-medium text-[var(--portfolio-muted)]">{period}</span> : null}
         {experience.isCurrent ? <span className="portfolio-label rounded-full border border-[var(--portfolio-accent)] px-2 py-1 text-[var(--portfolio-accent)]">Now</span> : null}
@@ -34,16 +34,19 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
             <h3 className="text-xl font-bold tracking-tight sm:text-2xl">{experience.role}</h3>
             {subtitle ? <p className="mt-2 text-sm text-[var(--portfolio-muted)]">{subtitle}</p> : null}
           </div>
-          <ArrowUpRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[var(--portfolio-accent)]" />
+          <ArrowUpRight aria-hidden="true" className="experience-arrow h-5 w-5 shrink-0 text-[var(--portfolio-accent)]" />
         </div>
         {expandable ? (
           <>
-            <button type="button" aria-expanded={open} onClick={() => setOpen((current) => !current)} className="mt-5 inline-flex min-h-11 cursor-pointer items-center border-b border-[var(--portfolio-foreground)] text-xs font-bold uppercase tracking-[0.12em] hover:text-[var(--portfolio-accent)]">
+            <button type="button" aria-expanded={open} aria-controls={`experience-details-${index}`} onClick={() => setOpen((current) => !current)} className="experience-toggle mt-5 inline-flex min-h-11 cursor-pointer items-center gap-3 border-b border-[var(--portfolio-foreground)] text-xs font-bold uppercase tracking-[0.12em] hover:text-[var(--portfolio-accent)]">
               {open ? "Show less" : "View details"}
+              <span aria-hidden="true" className={`experience-toggle-mark ${open ? "is-open" : ""}`}>+</span>
             </button>
-            {open ? (
-              <div id={`experience-details-${index}`} className={`mt-5 max-w-2xl border-l-2 border-[var(--portfolio-accent)] pl-5 text-sm leading-relaxed text-[var(--portfolio-muted)] ${richTextClass}`} dangerouslySetInnerHTML={{ __html: experience.description }} />
-            ) : null}
+            <div id={`experience-details-${index}`} className={`experience-detail ${open ? "is-open" : ""}`} aria-hidden={!open} inert={!open}>
+              <div className="experience-detail-inner">
+                <div className={`mt-5 max-w-2xl border-l-2 border-[var(--portfolio-accent)] pl-5 text-sm leading-relaxed text-[var(--portfolio-muted)] ${richTextClass}`} dangerouslySetInnerHTML={{ __html: experience.description }} />
+              </div>
+            </div>
           </>
         ) : null}
       </div>

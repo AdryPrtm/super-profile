@@ -3,6 +3,7 @@ import { ContactSection } from '@/features/profile-content/components/public/Con
 import { ExperienceSection } from '@/features/profile-content/components/public/ExperienceSection';
 import { HeroSection } from '@/features/profile-content/components/public/HeroSection';
 import { ProfileFooter } from '@/features/profile-content/components/public/ProfileFooter';
+import { PortfolioMotion } from '@/features/profile-content/components/public/PortfolioMotion';
 import { ProjectsSection } from '@/features/profile-content/components/public/ProjectsSection';
 import { SkillsSection } from '@/features/profile-content/components/public/SkillsSection';
 import { WatchBreakoutSection } from '@/features/profile-content/components/public/WatchBreakoutSection';
@@ -14,7 +15,7 @@ type PublicCvPageProps = {
 
 export function PublicCvPage({ content }: PublicCvPageProps) {
   return (
-    <main id="main-content" className="portfolio min-h-screen">
+    <PortfolioMotion>
       <HeroSection hero={content.hero} />
       <AboutSection about={content.about} />
       <SkillsSection skills={content.skills} />
@@ -23,6 +24,6 @@ export function PublicCvPage({ content }: PublicCvPageProps) {
       <WatchBreakoutSection />
       <ContactSection contact={content.contact} />
       <ProfileFooter footer={content.footer} socials={content.socials} />
-    </main>
+    </PortfolioMotion>
   );
 }

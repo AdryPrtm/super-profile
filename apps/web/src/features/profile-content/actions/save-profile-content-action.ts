@@ -18,11 +18,11 @@ export async function saveAdminProfileContent(formData: FormData) {
     await saveProfileContent(content);
   } catch (error) {
     console.error("Failed to save profile content", error);
-    redirect("/admin?error=database");
+    redirect(`/admin?error=database&attempt=${Date.now()}`);
   }
 
   revalidatePath("/");
   revalidatePath("/watch");
   revalidatePath("/admin");
-  redirect("/admin?saved=1");
+  redirect(`/admin?saved=${Date.now()}`);
 }

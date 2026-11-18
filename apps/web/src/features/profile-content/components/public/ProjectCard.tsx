@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Project } from "@/features/profile-content/data/profile-content";
+import { projectDescriptionHtml, projectDescriptionPreview, richTextClass } from "@/features/profile-content/utils/rich-text";
 import { cn } from "@/lib/utils";
 
 type ProjectCardProps = {
@@ -36,6 +37,7 @@ function TechChips({ tech }: { tech: string[] }) {
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
   const [activeImage, setActiveImage] = useState(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const cover = project.images[0];
   // Index dijaga tetap valid kalau daftar gambar berubah.
@@ -44,10 +46,12 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
     Math.max(project.images.length - 1, 0),
   );
   const mainImage = project.images[safeIndex];
+  const descriptionHtml = dialogOpen ? projectDescriptionHtml(project.description) : "";
 
   return (
     <Dialog
       onOpenChange={(open) => {
+        setDialogOpen(open);
         if (open) {
           setActiveImage(0);
         }
@@ -79,7 +83,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
               <h3 className="text-xl font-bold tracking-tight sm:text-2xl">{project.title}</h3>
               <ArrowUpRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[var(--portfolio-accent)]" />
             </div>
-            <p className="mt-3 mb-6 line-clamp-3 text-sm leading-relaxed text-[var(--portfolio-muted)]">{project.description}</p>
+            <p className="mt-3 mb-6 line-clamp-3 text-sm leading-relaxed text-[var(--portfolio-muted)]">{projectDescriptionPreview(project.description)}</p>
             <div className="mt-auto"><TechChips tech={project.tech} /></div>
           </div>
         </button>
@@ -89,7 +93,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         <DialogHeader>
           <DialogTitle>{project.title}</DialogTitle>
           {project.description ? (
-            <DialogDescription>{project.description}</DialogDescription>
+            <DialogDescription asChild>
+              <div className={richTextClass} dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
+            </DialogDescription>
           ) : null}
         </DialogHeader>
 

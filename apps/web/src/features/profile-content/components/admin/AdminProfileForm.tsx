@@ -1,7 +1,5 @@
-import { Save } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { saveAdminProfileContent } from "@/features/profile-content/actions/save-profile-content-action";
+import { AdminSaveFeedback } from "@/features/profile-content/components/admin/AdminSaveFeedback";
 import { AdminFormSection } from "@/features/profile-content/components/admin/AdminFormSection";
 import { ExperiencesEditor } from "@/features/profile-content/components/admin/ExperiencesEditor";
 import { ProfileField } from "@/features/profile-content/components/admin/ProfileField";
@@ -13,9 +11,12 @@ import type { ProfileContent } from "@/features/profile-content/data/profile-con
 
 type AdminProfileFormProps = {
   content: ProfileContent;
+  saveToken: string | null;
+  errorToken: string | null;
+  hasDatabaseError: boolean;
 };
 
-export function AdminProfileForm({ content }: AdminProfileFormProps) {
+export function AdminProfileForm({ content, saveToken, errorToken, hasDatabaseError }: AdminProfileFormProps) {
   return (
     <form action={saveAdminProfileContent} className="space-y-6">
       <AdminFormSection title="Webpage metadata">
@@ -141,12 +142,7 @@ export function AdminProfileForm({ content }: AdminProfileFormProps) {
         />
       </AdminFormSection>
 
-      <div className="sticky bottom-0 flex justify-end border-t border-border/60 bg-background/95 py-4 backdrop-blur">
-        <Button type="submit" size="lg">
-          <Save className="h-4 w-4" />
-          Save Content
-        </Button>
-      </div>
+      <AdminSaveFeedback saveToken={saveToken} errorToken={errorToken} hasDatabaseError={hasDatabaseError} />
     </form>
   );
 }
