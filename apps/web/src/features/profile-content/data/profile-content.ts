@@ -67,6 +67,7 @@ export type ProfileContent = {
     description: string;
     email: string;
     buttonLabel: string;
+    cvUrl: string;
   };
   socials: SocialLink[];
   footer: {
@@ -214,6 +215,7 @@ export const DEFAULT_PROFILE_CONTENT: ProfileContent = {
       "I am always open to discussing new projects, creative ideas, or opportunities to be part of your vision.",
     email: "hello@example.com",
     buttonLabel: "Say Hello",
+    cvUrl: "",
   },
   socials: [
     { label: "GitHub", url: "#", icon: "github" },
@@ -512,6 +514,7 @@ export function normalizeProfileContent(value: unknown): ProfileContent {
         contact.buttonLabel,
         DEFAULT_PROFILE_CONTENT.contact.buttonLabel,
       ),
+      cvUrl: readString(contact.cvUrl, DEFAULT_PROFILE_CONTENT.contact.cvUrl),
     },
     socials: readSocials(
       source.socials,
