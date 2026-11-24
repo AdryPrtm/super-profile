@@ -4,6 +4,7 @@ import { AdminFormSection } from "@/features/profile-content/components/admin/Ad
 import { ExperiencesEditor } from "@/features/profile-content/components/admin/ExperiencesEditor";
 import { ProfileField } from "@/features/profile-content/components/admin/ProfileField";
 import { HeroImageField } from "@/features/profile-content/components/admin/HeroImageField";
+import { CvFileField } from "@/features/profile-content/components/admin/CvFileField";
 import { ProfileTextareaField } from "@/features/profile-content/components/admin/ProfileTextareaField";
 import { SkillsAndProjectsEditor } from "@/features/profile-content/components/admin/SkillsAndProjectsEditor";
 import { SocialsEditor } from "@/features/profile-content/components/admin/SocialsEditor";
@@ -130,6 +131,7 @@ export function AdminProfileForm({ content, saveToken, errorToken, hasDatabaseEr
             defaultValue={content.contact.buttonLabel}
           />
         </div>
+        <CvFileField cvUrl={content.contact.cvUrl} />
       </AdminFormSection>
 
       <SocialsEditor socials={content.socials} />

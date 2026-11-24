@@ -195,6 +195,7 @@ export function buildProfileContentFromFormData(formData: FormData) {
         "contactButtonLabel",
         fallback.contact.buttonLabel,
       ),
+      cvUrl: getText(formData, "contactCvUrl", fallback.contact.cvUrl),
     },
     socials: parseSocials(formData),
     footer: {
